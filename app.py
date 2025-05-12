@@ -79,11 +79,6 @@ def home():
 
     return render_template('index.html', carousel_items=carousel_items, resources=resources)
 
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return "An error occurred while fetching data."
-
 from flask import session  # Add this import if not already
 
 @app.route('/submit', methods=['POST'])
