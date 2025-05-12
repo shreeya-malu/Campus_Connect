@@ -57,28 +57,28 @@ def index():
 
 @app.route('/home')
 def home():
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor(dictionary=True)
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
 
-        # Fetch the carousel items
-        cursor.execute("SELECT * FROM carousel_item")
-        carousel_items = cursor.fetchall()
+    # Fetch the carousel items
+    cursor.execute("SELECT * FROM carousel_item")
+    carousel_items = cursor.fetchall()
 
-        # Fetch the 5 most recent resources
-        cursor.execute("""
-            SELECT r.Resource_id, rt.ResourceType_name AS type, r.Link, c.Name AS contributor
-            FROM Resources r
-            JOIN ResourceTypes rt ON r.ResourceType_id = rt.ResourceType_id
-            JOIN Contributors c ON r.Contributor_id = c.Contributor_id
-            LIMIT 5
-        """)
-        resources = cursor.fetchall()
+    # Fetch the 5 most recent resources
+    cursor.execute("""
+        SELECT r.Resource_id, rt.ResourceType_name AS type, r.Link, c.Name AS contributor
+        FROM Resources r
+        JOIN ResourceTypes rt ON r.ResourceType_id = rt.ResourceType_id
+        JOIN Contributors c ON r.Contributor_id = c.Contributor_id
+        LIMIT 5
+    """)
+    resources = cursor.fetchall()
 
-        cursor.close()
-        connection.close()
+    cursor.close()
+    connection.close()
 
-        return render_template('index.html', carousel_items=carousel_items, resources=resources)
+    return render_template('index.html', carousel_items=carousel_items, resources=resources)
+
 
     except Exception as e:
         print(f"An error occurred: {e}")
