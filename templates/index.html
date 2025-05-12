@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Interactive Campus Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="navbar_w">
+       <div id="logo">
+            <img src="../static/Assets/logo squarish.png">
+        </div>
+        <div id="navbar">
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/opportunities">Opportunities</a></li>
+                <li><a href="/resources">Resources</a></li>
+                <li><a href="/news">News</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="{{ url_for('view_news_requests') }}" class="admin-button">Admin</a></li> 
+                                 
+            </ul>  
+        </div> 
+        <div id="auth-buttons">
+            <button id="login-btn">Login/Sign up</button>
+          </div>
+    </div>
+    <div id="hero-section">
+        <div id="Heading">
+            <h1>Your One-Stop <br> <span style="color: #fb8500ff;">Campus</span> <br><span style="color: #ffb703ff;">Companion.</span></h1>
+        </div>
+        <div id="map">
+        </div>
+    </div>
+    <h2 id="heading2">Discover, Connect, Collaborate. All from one place.</h4>
+    <hr>
+    <div id="section2">
+        <div class="event-slider-wrapper">
+            <div class="event-text">
+                <h2>Upcoming Events</h2>
+                <p><span style="font-size: 45px;color: #fb8500ff; font-weight: 600;">Stay Informed,</span><br>and apply to the latest opportunities curated for you.</p>
+            </div>
+        
+            <div class="slider-container">
+                <button class="slider-btn left" onclick="scrollSlider(-1)">&#10094;</button>
+        
+                <div class="slider" id="card-slider">
+                    {% for item in carousel_items %}
+                    <div class="card">
+                        <img src="{{ url_for('static', filename=item.image_url) }}" alt="Event image">
+                        <div class="card-body">
+                            <p>{{ item.description[:100] }}...</p>
+                            <a href="{{ item.link }}" target="_blank">
+                                <button class="apply-btn">Apply</button>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+        
+                    <!-- See more card -->
+                    <div class="card see-more-card">
+                        <div class="card-body">
+                            <h3>See More</h3>
+                            <a href="/all-events">
+                                <button class="apply-btn">Browse All</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+        
+                <button class="slider-btn right" onclick="scrollSlider(1)">&#10095;</button>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div id="resources-section">
+        <!-- Subheading (center-aligned) -->
+        <div class="subheading">
+            <p>Explore the best resources available</p>
+        </div>
+    
+        <!-- Main heading -->
+        <div class="heading">
+            <h2>Use These Resources</h2>
+        </div>
+    
+        <!-- Resources grid -->
+        <div class="resources-grid" id="resources-grid">
+            {% for resource in resources %}
+            <div class="resource-card">
+                <h3 class="resource-title">{{ resource.type }}</h3>
+                <p class="resource-description">{{ resource.description or 'No description available' }}</p>
+                <a href="{{ resource.Link }}" class="resource-link">
+                    <button class="apply-btn">View Resource</button>
+                </a>
+            </div>
+            {% endfor %}
+    
+            <!-- "See More" Card -->
+            <div class="resource-card see-more-card">
+                <div class="card-body">
+                    <h3>See More</h3>
+                    <a href="/resources" class="see-more-link">
+                        <button class="apply-btn">Browse All</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notice-board-wrapper">
+        <div class="notice-board">
+          <div class="pushpin"></div>
+          <div id="notice-heading"><h2>NOTICE BOARD</h2></div>
+    
+          <div class="filter-buttons">
+            <button class="active" onclick="filterNews('all', this)">All</button>
+            <button onclick="filterNews('fy', this)">FY</button>
+            <button onclick="filterNews('sy', this)">SY</button>
+            <button onclick="filterNews('ty', this)">TY</button>
+            <button onclick="filterNews('btech', this)">BTech</button>
+            <button onclick="filterNews('other', this)">Other</button>
+          </div>
+    
+          <div class="news-container" id="newsContainer">
+            <div class="news-ticker" id="newsTicker">
+              <!-- News items will be dynamically inserted here -->
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="faq-section">
+        <div class="faq-title">Frequently Asked Questions</div>
+      
+        <div class="faq-item">
+          <div class="faq-question">What is Campus Connect and who can use it?</div>
+          <div class="faq-answer">Campus Connect is a centralized platform designed to streamline communication and resource sharing within a college campus. It is intended for students, faculty, and administrators.</div>
+        </div>
+      
+        <div class="faq-item">
+          <div class="faq-question">How do I register and log in to the platform?</div>
+          <div class="faq-answer">Users are provided with login credentials by the admin. Based on your role (student, faculty, admin), you'll have access to relevant features after secure authentication.</div>
+        </div>
+      
+        <div class="faq-item">
+          <div class="faq-question">What features are available for students?</div>
+          <div class="faq-answer">Students can view campus notices, download resources, check opportunities like internships or scholarships, and stay updated on events and announcements.</div>
+        </div>
+      
+        <div class="faq-item">
+          <div class="faq-question">Can faculty members upload content or announcements?</div>
+          <div class="faq-answer">Yes, faculty members can upload study materials, post academic notices, and manage content, which is subject to admin approval for publishing.</div>
+        </div>
+      
+        <div class="faq-item">
+          <div class="faq-question"> How does Campus Connect ensure data privacy and role-based access?</div>
+          <div class="faq-answer">The platform uses a secure authentication system and Role-Based Access Control (RBAC), ensuring users only access functionalities relevant to their role and protecting sensitive data.</div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="footer-container">
+      
+          <div class="footer-column">
+            <h3>About Campus Connect</h3>
+            <p>Campus Connect is a unified platform that connects students, faculty, and administrators. It streamlines communication, resource sharing, and academic management to create a more connected and efficient campus experience.</p>
+          </div>
+      
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+            <p><a href="/home">Home</a></p>
+            <p><a href="/events">Events</a></p>
+            <p><a href="/news">News</a></p>
+            <p><a href="/resources">Resources</a></p>
+            <p><a href="/contact">Contact Us</a></p>
+            <p><a href="/about">About Us</a></p>
+          </div>
+      
+          <div class="footer-column">
+            <h3>Contact</h3>
+            <p>Email: support@campusconnect.com</p>
+            <p>Phone: +91 98765 43210</p>
+            <p>Location: Pune, Maharashtra, India</p>
+            <div class="footer-socials">
+              <a href="#" title="Instagram"><i class="fa fa-instagram"></i></a>
+              <a href="#" title="LinkedIn"><i class="fa fa-linkedin"></i></a>
+              <a href="#" title="Twitter"><i class="fa fa-twitter"></i></a>
+              <a href="#" title="GitHub"><i class="fa fa-github"></i></a>
+            </div>
+          </div>
+      
+        </div>
+      
+        <div class="footer-bottom">
+          © 2025 Campus Connect. All rights reserved.
+        </div>
+      </div>
+      
+
+    
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='map.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

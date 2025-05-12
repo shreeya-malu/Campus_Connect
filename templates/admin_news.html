@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin News Requests</title>
+</head>
+<body>
+    <h1>News Requests Pending Approval</h1>
+
+    <!-- Show the Pending News Requests table only if there are requests -->
+    {% if requests %}
+    <table border="1" cellspacing="0" cellpadding="10" style="width:100%; text-align:left; border-collapse: collapse;">
+        <thead style="background-color: #f2f2f2;">
+            <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Requested By</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+            <tr>
+                <td>{{ request.title }}</td>
+                <td>{{ request.category }}</td>
+                <td>{{ request.requested_by }}</td>
+                <td>
+                    <form action="{{ url_for('handle_news_request', request_id=request.request_id) }}" method="POST">
+                        <button type="submit" name="action" value="approve">Approve</button>
+                        <button type="submit" name="action" value="reject">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No pending news requests at the moment.</p>
+    {% endif %}
+
+    <h2>Approved News (Top 20)</h2>
+    <table border="1" cellspacing="0" cellpadding="10" style="width:100%; text-align:left; border-collapse: collapse;">
+        <thead style="background-color: #f2f2f2;">
+            <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Content</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for news in approved_news %}
+            <tr>
+                <td>{{ news.title }}</td>
+                <td>{{ news.category }}</td>
+                <td style="white-space: pre-wrap;">{{ news.content }}</td>
+                <td>{{ news.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
