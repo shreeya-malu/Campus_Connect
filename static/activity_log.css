@@ -1,0 +1,108 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fc;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #023047;
+}
+
+header p {
+    font-size: 1rem;
+    color: #888;
+}
+
+/* Table container */
+.table-container {
+    overflow-x: auto;
+}
+
+.activity-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.activity-log-table th,
+.activity-log-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.activity-log-table th {
+    background-color: #023047;
+    color: white;
+    text-align: center;
+}
+
+.activity-log-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.activity-log-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.activity-log-table td {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Footer or Additional info */
+footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+/* Back Button Styling */
+.back-button {
+    position: fixed; /* Fix the position relative to the screen */
+    top: 20px;       /* 20px from the top */
+    left: 20px;      /* 20px from the left */
+    padding: 10px 20px;
+    background-color: #023047; /* Blue button */
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 9999;   /* Ensure the button is above other content */
+}
+
+/* Hover Effect */
+.back-button:hover {
+    background-color: #023047;
+    transform: scale(1.05);
+}
