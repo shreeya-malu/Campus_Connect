@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% if is_admin %}Admin Requests{% else %}My Requests{% endif %}
+    </title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='Resources.css') }}"
+    />
+  </head>
+  <body class="request-page">
+    {% include 'navbar.html' %}
+    <div class="container">
+      <h1>
+        {% if is_admin %}Pending Domain Requests{% else %}My Request Status{% endif %}
+      </h1>
+
+      {% if not requests %}
+      <div class="dialog-box">
+        <p>
+          {% if is_admin %}No pending requests{% else %}You haven't made any requests yet{% endif %}
+        </p>
+      </div>
+      {% else %}
+      <div class="request-list">
+        {% for request in requests %}
+        <div class="request-item" data-request-id="{{ request.request_id }}">
+          <h3>{{ request.domain_name }}</h3>
+          <p><strong>Status:</strong> {{ request.status|capitalize }}</p>
+          <p>
+            <strong>Date:</strong> {{ request.request_date.strftime('%Y-%m-%d %H:%M') }}
+          </p>
+
+          {% if is_admin %}
+          <p><strong>Requested by:</strong> {{ request.requester_name }}</p>
+          <div class="request-actions">
+    <button class="approve-btn" data-action="approve" data-request-id="{{ request.request_id }}">
+        Approve
+    </button>
+    <button class="reject-btn" data-action="reject" data-request-id="{{ request.request_id }}">
+        Reject
+    </button>
+</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div id="status-dialog" class="dialog-box" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000;">
+      <p id="status-message"></p>
+      <button onclick="location.reload()">OK</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='Resources.js') }}"></script>
+    <div class="footer">
+        <div class="footer-container">
+      
+          <div class="footer-column">
+            <h3>About Campus Connect</h3>
+            <p>Campus Connect is a unified platform that connects students, faculty, and administrators. It streamlines communication, resource sharing, and academic management to create a more connected and efficient campus experience.</p>
+          </div>
+      
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+            <p><a href="/home">Home</a></p>
+            <p><a href="/events">Events</a></p>
+            <p><a href="/news">News</a></p>
+            <p><a href="/resources">Resources</a></p>
+            <p><a href="/contact">Contact Us</a></p>
+            <p><a href="/about">About Us</a></p>
+          </div>
+      
+          <div class="footer-column">
+            <h3>Contact</h3>
+            <p>Email: support@campusconnect.com</p>
+            <p>Phone: +91 98765 43210</p>
+            <p>Location: Pune, Maharashtra, India</p>
+            <div class="footer-socials">
+              <a href="#" title="Instagram"><i class="fa fa-instagram"></i></a>
+              <a href="#" title="LinkedIn"><i class="fa fa-linkedin"></i></a>
+              <a href="#" title="Twitter"><i class="fa fa-twitter"></i></a>
+              <a href="#" title="GitHub"><i class="fa fa-github"></i></a>
+            </div>
+          </div>
+      
+        </div>
+      
+        <div class="footer-bottom">
+          © 2025 Campus Connect. All rights reserved.
+        </div>
+      </div>
+  
+
+  </body>
+</html>
