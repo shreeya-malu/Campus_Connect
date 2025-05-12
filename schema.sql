@@ -1,7 +1,7 @@
 -- Table 1: Users
 CREATE TABLE IF NOT EXISTS Users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
     passing_date DATE,
@@ -9,16 +9,6 @@ CREATE TABLE IF NOT EXISTS Users (
     role ENUM('student', 'teaching faculty', 'admin'),
     is_active TINYINT(1) NOT NULL
 );
-
--- Table 13: CarouselItem
-CREATE TABLE IF NOT EXISTS CarouselItem (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    image_url VARCHAR(255) NOT NULL,
-    link VARCHAR(255),
-    title VARCHAR(100),
-    description TEXT
-);
-
 
 -- Table 3: Contributors
 CREATE TABLE IF NOT EXISTS Contributors (
@@ -51,7 +41,16 @@ CREATE TABLE IF NOT EXISTS News (
     title VARCHAR(100) NOT NULL,
     content TEXT,
     category VARCHAR(50),
-    created_at DATETIME NOT NULL
+    created_at TIMESTAMP NOT NULL
+);
+
+-- Table 13: CarouselItem
+CREATE TABLE IF NOT EXISTS CarouselItem (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    image_url VARCHAR(255) NOT NULL,
+    link VARCHAR(255),
+    title VARCHAR(100),
+    description TEXT
 );
 
 -- Table 15: Buildings
@@ -61,6 +60,7 @@ CREATE TABLE IF NOT EXISTS Buildings (
     latitude DECIMAL(9,6) NOT NULL,
     longitude DECIMAL(9,6) NOT NULL
 );
+
 
 -- Table 17: Alumnae
 CREATE TABLE IF NOT EXISTS Alumnae (
@@ -74,8 +74,6 @@ CREATE TABLE IF NOT EXISTS Alumnae (
     Deactivated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
 -- Table 2: Resources
 CREATE TABLE IF NOT EXISTS Resources (
     Resource_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -88,11 +86,6 @@ CREATE TABLE IF NOT EXISTS Resources (
     FOREIGN KEY (ResourceType_id) REFERENCES ResourceTypes(ResourceType_id)
 );
 
-
-
-
-
-
 -- Table 6: Opportunities
 CREATE TABLE IF NOT EXISTS Opportunities (
     opp_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -100,9 +93,8 @@ CREATE TABLE IF NOT EXISTS Opportunities (
     description TEXT,
     link VARCHAR(255),
     posted_by INT NOT NULL,
-    FOREIGN KEY (posted_by) REFERENCES Users(id)
+    FOREIGN KEY (posted_by) REFERENCES Users(user_id)
 );
-
 
 -- Table 8: Collaborations
 CREATE TABLE IF NOT EXISTS Collaborations (
@@ -112,8 +104,8 @@ CREATE TABLE IF NOT EXISTS Collaborations (
     collaboration_type VARCHAR(100),
     posted_by INT NOT NULL,
     contact_link VARCHAR(255),
-    created_at DATETIME NOT NULL,
-    FOREIGN KEY (posted_by) REFERENCES Users(id)
+    created_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (posted_by) REFERENCES Users(user_id)
 );
 
 -- Table 9: Collaborators
@@ -123,9 +115,10 @@ CREATE TABLE IF NOT EXISTS Collaborators (
     student_name VARCHAR(100) NOT NULL,
     student_email VARCHAR(100) NOT NULL,
     student_linkedin VARCHAR(100),
-    created_at DATETIME NOT NULL,
+    created_at TIMESTAMP NOT NULL,
     FOREIGN KEY (collaboration_id) REFERENCES Collaborations(collaboration_id)
 );
+
 
 
 -- Table 11: NewsRequests
@@ -136,8 +129,8 @@ CREATE TABLE IF NOT EXISTS NewsRequests (
     category VARCHAR(50),
     requested_by INT NOT NULL,
     status ENUM('pending', 'approved', 'rejected'),
-    submitted_at DATETIME NOT NULL,
-    FOREIGN KEY (requested_by) REFERENCES Users(id)
+    submitted_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (requested_by) REFERENCES Users(user_id)
 );
 
 -- Table 12: DomainRequests
@@ -145,9 +138,9 @@ CREATE TABLE IF NOT EXISTS DomainRequests (
     request_id INT PRIMARY KEY AUTO_INCREMENT,
     domain_name VARCHAR(100) NOT NULL,
     requested_by INT NOT NULL,
-    request_date DATETIME NOT NULL,
+    request_date TIMESTAMP NOT NULL,
     status ENUM('pending', 'approved', 'rejected'),
-    FOREIGN KEY (requested_by) REFERENCES Users(id)
+    FOREIGN KEY (requested_by) REFERENCES Users(user_id)
 );
 
 
@@ -160,15 +153,14 @@ CREATE TABLE IF NOT EXISTS Events (
 );
 
 
--- Table 16: Activity log
+-- Table 16: Activity_log
 CREATE TABLE IF NOT EXISTS Activity_log (
     log_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     action_table ENUM('news', 'opportunities', 'collaborations', 'others'),
     target_table VARCHAR(100) NOT NULL,
     target_id INT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     details TEXT,
-    FOREIGN KEY (user_id) REFERENCES Users(id)
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
-
