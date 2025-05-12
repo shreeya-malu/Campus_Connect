@@ -81,9 +81,9 @@ CREATE TABLE IF NOT EXISTS resources (
     Domain_id INT NOT NULL,
     ResourceType_id INT NOT NULL,
     Link VARCHAR(255),
-    FOREIGN KEY (Contributor_id) REFERENCES Contributors(Contributor_id),
-    FOREIGN KEY (Domain_id) REFERENCES Domains(Domain_id),
-    FOREIGN KEY (ResourceType_id) REFERENCES ResourceTypes(ResourceType_id)
+    FOREIGN KEY (Contributor_id) REFERENCES contributors(Contributor_id),
+    FOREIGN KEY (Domain_id) REFERENCES domains(Domain_id),
+    FOREIGN KEY (ResourceType_id) REFERENCES resourcetypes(ResourceType_id)
 );
 
 -- Table 6: Opportunities
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS opportunities (
     description TEXT,
     link VARCHAR(255),
     posted_by INT NOT NULL,
-    FOREIGN KEY (posted_by) REFERENCES Users(user_id)
+    FOREIGN KEY (posted_by) REFERENCES users(user_id)
 );
 
 -- Table 8: Collaborations
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS collaborations (
     posted_by INT NOT NULL,
     contact_link VARCHAR(255),
     created_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (posted_by) REFERENCES Users(user_id)
+    FOREIGN KEY (posted_by) REFERENCES users(user_id)
 );
 
 -- Table 9: Collaborators
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS collaborators (
     student_email VARCHAR(100) NOT NULL,
     student_linkedin VARCHAR(100),
     created_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (collaboration_id) REFERENCES Collaborations(collaboration_id)
+    FOREIGN KEY (collaboration_id) REFERENCES collaborations(collaboration_id)
 );
 
 
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS news_requests (
     requested_by INT NOT NULL,
     status ENUM('pending', 'approved', 'rejected'),
     submitted_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (requested_by) REFERENCES Users(user_id)
+    FOREIGN KEY (requested_by) REFERENCES users(user_id)
 );
 
 -- Table 12: DomainRequests
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS domain_requests (
     requested_by INT NOT NULL,
     request_date TIMESTAMP NOT NULL,
     status ENUM('pending', 'approved', 'rejected'),
-    FOREIGN KEY (requested_by) REFERENCES Users(user_id)
+    FOREIGN KEY (requested_by) REFERENCES users(user_id)
 );
 
 
@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS events (
     id INT PRIMARY KEY AUTO_INCREMENT,
     event_name VARCHAR(100) NOT NULL,
     building_id INT,
-    FOREIGN KEY (building_id) REFERENCES Buildings(id)
+    FOREIGN KEY (building_id) REFERENCES buildings(id)
 );
 
 
@@ -162,5 +162,5 @@ CREATE TABLE IF NOT EXISTS activity_log (
     target_id INT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     details TEXT,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
