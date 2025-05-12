@@ -1,0 +1,366 @@
+/* ===================== */
+/* GLOBAL VARIABLES      */
+/* ===================== */
+@import url("https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Poetsen+One&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+:root {
+  --light-purple: #dcd6f7;
+  --cream-bg: #fff6da;
+  --blue-green: #219ebc;
+  --prussian-blue: #023047;
+  --selective-yellow: #ffb703;
+  --ut-orange: #fb8500;
+  --dark-text: #1c1c1c;
+  --white: #ffffff;
+}
+
+/* ===================== */
+/* BASE STYLES           */
+/* ===================== */
+body {
+  background-color: var(--light-purple);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--dark-text);
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  color: var(--prussian-blue);
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  color: var(--prussian-blue);
+  font-size: 1.8rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Font Classes */
+.poppins-thin {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+}
+
+.bacasime-antique-regular {
+  font-family: "Bacasime Antique", serif;
+}
+
+.libre-baskerville-regular {
+  font-family: "Libre Baskerville", serif;
+}
+
+/* ===================== */
+/* MAIN CONTENT LAYOUT   */
+/* ===================== */
+.main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ===================== */
+/* NAV TABS              */
+/* ===================== */
+.nav-tabs .nav-link {
+  color: var(--prussian-blue);
+  font-weight: 500;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--ut-orange);
+  border-bottom: 2px solid var(--ut-orange);
+}
+
+.nav-tabs .nav-link.active {
+  background-color: transparent;
+  color: var(--blue-green);
+  border-bottom: 2px solid var(--blue-green);
+}
+
+/* ===================== */
+/* CARDS                 */
+/* ===================== */
+.card {
+  background-color: var(--cream-bg);
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-title {
+  color: var(--prussian-blue);
+  margin-bottom: 0.75rem;
+}
+
+.card-text {
+  color: var(--dark-text);
+  margin-bottom: 1rem;
+}
+
+/* Opportunity Card (used for both opportunities and collaborations) */
+.opportunity-card {
+  background-color: var(--cream-bg);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.opportunity-card h3 {
+  color: var(--prussian-blue);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.opportunity-card p {
+  color: var(--dark-text);
+  margin-bottom: 0.5rem;
+}
+
+.learn-more-btn {
+  background-color: var(--blue-green) !important;
+  color: var(--white) !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 5px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+  transition: background-color 0.3s !important;
+}
+
+.learn-more-btn:hover {
+  background-color: var(--prussian-blue) !important;
+}
+
+/* ===================== */
+/* CONTRIBUTE SECTION    */
+/* ===================== */
+.contribute-section {
+  background-color: var(--cream-bg);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.contribute-section h2 {
+  color: var(--prussian-blue);
+}
+
+.contribute-section p {
+  margin-bottom: 1.5rem;
+}
+
+/* ===================== */
+/* FORM ELEMENTS         */
+/* ===================== */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  border-color: var(--blue-green);
+  outline: none;
+  box-shadow: 0 0 5px rgba(33, 158, 188, 0.3);
+}
+
+.form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  background-color: var(--white);
+}
+
+.form-select:focus {
+  border-color: var(--blue-green);
+  outline: none;
+  box-shadow: 0 0 5px rgba(33, 158, 188, 0.3);
+}
+
+.submit-btn {
+  background-color: var(--selective-yellow) !important;
+  color: var(--dark-text) !important;
+  border: none !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 5px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  transition: background-color 0.3s !important;
+}
+
+.submit-btn:hover {
+  background-color: var(--ut-orange) !important;
+  color: var(--white) !important;
+}
+
+/* ===================== */
+/* SEARCH SECTION        */
+/* ===================== */
+.search-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--prussian-blue);
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.search-input:focus {
+  border-color: var(--selective-yellow);
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 183, 3, 0.3);
+}
+
+.search-btn {
+  background-color: var(--blue-green) !important;
+  color: var(--white) !important;
+  border: none !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 5px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  transition: background-color 0.3s !important;
+}
+
+.search-btn:hover {
+  background-color: var(--prussian-blue) !important;
+}
+
+/* ===================== */
+/* Cont1 Section         */
+/* ===================== 
+.cont1 {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1rem;
+    background-color: var(--white);
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cont1 .image-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cont1 img.grp-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 30px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.cont1 .heading-wrapper {
+    margin-top: 1rem;
+}
+
+.cont1 h1 {
+    font-size: 2.5rem;
+    color: var(--prussian-blue);
+    margin: 0;
+}
+*/
+
+
+.cont1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: poppins;
+    width: 100%;
+    height: 18rem;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 50px;
+    background-color: #fffdf5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dialog-box {
+  background-color: var(--dialog-beige);
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border-left: 3px solid var(--button-brown);
+}
+
+.cont1 h1 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600; /* Semi-bold for a strong presence */
+    font-size: 2.5rem;
+    color: var(--prussian-blue); /* Dark blue (#023047) */
+    margin: 0;
+    letter-spacing: 1px; /* Spacious, modern look */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    line-height: 1.2; /* Improved readability for long heading */
+}
+
+.grp-image {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    margin-left: 80px;
+    margin-right: 60px;
+}
+
+/* ===================== */
+/* RESPONSIVE DESIGN     */
+/* ===================== */
+@media (max-width: 768px) {
+  .search-form {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-input {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .search-btn {
+    width: 100%;
+  }
+
+  .main-container {
+    padding: 1rem;
+  }
+
+  .cont1 h1 {
+    font-size: 1.8rem;
+  }
+}

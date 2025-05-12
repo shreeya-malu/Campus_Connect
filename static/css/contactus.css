@@ -1,0 +1,221 @@
+/* Color Variables */
+:root {
+  --light-blue: #e1e8f0;
+  --blue-green: #219ebc;
+  --prussian-blue: #023047;
+  --selective-yellow: #ffb703;
+  --ut-orange: #fb8500;
+}
+
+/* Base Styles */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(
+    90deg,
+    hsla(233, 100%, 90%, 1) 0%,
+    hsla(0, 0%, 89%, 1) 100%
+  );
+  min-height: 100vh;
+}
+
+/* Navbar 
+.navbar-custom {
+  background-color: var(--prussian-blue);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-size: x-large;
+  color: var(--selective-yellow);
+  font-weight: bold;
+}
+
+.navbar-logo {
+  height: 40px;
+}
+
+.nav-link {
+  font-size: large;
+  color: white !important;
+}
+
+.nav-link:hover {
+  color: var(--ut-orange) !important;
+}
+
+.nav-link.active {
+  font-weight: bold;
+}*/
+
+.btn-login {
+  background-color: var(--ut-orange);
+  color: #f9f3ea;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.btn-login:hover {
+  background-color: var(--selective-yellow);
+  color: #000;
+}
+
+/* Contact Section */
+.contact-body {
+  min-height: 90vh;
+  padding: 50px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /**/
+}
+
+.contact-card {
+  width: 90%;
+  max-width: 1000px;
+  background-color: #fffdf5;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: transparent;
+  border: none;
+}
+
+.card-title {
+  color: var(--prussian-blue);
+  font-weight: bold;
+}
+
+.contact-subtitle {
+  color: var(--prussian-blue);
+  font-weight: 600;
+}
+
+.contact-description {
+  color: #6c757d;
+  margin-bottom: 2rem;
+}
+
+.contact-details p {
+  color: var(--prussian-blue);
+  margin-bottom: 1rem;
+}
+
+.contact-details i {
+  color: var(--selective-yellow);
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Team Members */
+.team-members {
+  margin-top: 1rem;
+}
+
+.team-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+  height: 170px;
+  overflow: hidden
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+}
+
+.team-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.team-name {
+  color: var(--prussian-blue);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.linkedin-link {
+  color: var(--selective-yellow);
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap
+}
+
+.linkedin-link i {
+  margin-right: 5px;
+}
+
+.linkedin-link:hover {
+  color: var(--ut-orange);
+}
+
+/* Message Box */
+.message-box {
+  padding: 1.5rem;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.message-box h4 {
+  color: var(--prussian-blue);
+  margin-bottom: 1.5rem;
+}
+
+.form-control {
+  border-radius: 10px;
+  border: 1px solid #ced4da;
+  padding: 10px 15px;
+}
+
+.btn-submit {
+  background-color: var(--selective-yellow);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  width: 100%;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-submit:hover {
+  background-color: var(--ut-orange);
+  color: white;
+}
+
+/* Social Section */
+.social-section {
+  margin-top: 2rem;
+}
+
+.social-section h5 {
+  color: var(--prussian-blue);
+  margin-bottom: 1rem;
+}
+
+.social-icons a {
+  color: var(--selective-yellow);
+  font-size: 20px;
+  margin: 0 10px;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.social-icons a:hover {
+  transform: scale(1.2);
+  color: var(--ut-orange);
+}

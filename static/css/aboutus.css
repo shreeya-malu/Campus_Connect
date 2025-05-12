@@ -1,0 +1,160 @@
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(
+    90deg,
+    hsla(233, 100%, 95%, 1) 0%, /* Slightly lighter background for a cleaner look */
+    hsla(0, 0%, 92%, 1) 100%
+  );
+  color: #333; /* Default text color for better readability */
+}
+
+/* Navbar */
+.navbar.bg-primary-custom {
+  background-color: #023047 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.navbar-logo {
+  height: 40px;
+}
+
+.nav-link {
+  color: #e1e8f0 !important;
+  font-size: 1.1rem;
+  margin: 0 15px; /* Increased margin for better spacing */
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #fb8500 !important; /* Hover effect matching the button */
+}
+
+.btn-login {
+  background-color: #fb8500;
+  color: #ffffff; /* Changed to pure white for better contrast */
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 20px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-login:hover {
+  background-color: #ffb703; /* Lighter orange for hover */
+  transform: translateY(-2px); /* Subtle lift on hover */
+}
+
+/* Main Content */
+.about-container {
+   background-color: #fffdf5;
+  padding: 40px 50px; /* Adjusted padding for better spacing */
+  border-radius: 15px; /* Slightly smaller radius for a cleaner look */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Softer shadow */
+  margin: 3rem auto;
+  max-width: 1000px; /* Slightly wider for a more balanced look */
+  border: 1px solid #e6e6e6; /* Lighter border color */
+  transition: all 0.3s ease-in-out;
+}
+
+.about-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+.about-section h2 {
+  color: #023047;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 700; /* Bolder for a more formal heading */
+  font-size: 2.25rem; /* Larger heading for emphasis */
+  letter-spacing: 0.5px; /* Slight letter spacing for professionalism */
+}
+
+.about-section h4 {
+  color: #023047;
+  margin-top: 35px;
+  margin-bottom: 15px;
+  font-weight: 600; /* Slightly bolder for subheadings */
+  font-size: 1.5rem; /* Larger subheadings */
+  border-bottom: 2px solid #fb8500; /* Underline for visual hierarchy */
+  padding-bottom: 5px; /* Space between text and underline */
+  display: inline-block; /* Ensure underline only spans the text */
+}
+
+.about-section p,
+.benefits-list li {
+  font-weight: 400; /* Slightly heavier for better readability */
+  color: #444; /* Softer color for text */
+  line-height: 1.8; /* Increased line height for readability */
+  font-size: 1.05rem; /* Slightly larger for a formal look */
+}
+
+.benefits-list {
+  padding-left: 25px;
+  margin-top: 10px;
+}
+
+.benefits-list li {
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 15px;
+}
+
+.benefits-list li::before {
+  content: "•";
+  color: #fb8500; /* Orange bullet for consistency */
+  font-size: 1.5rem;
+  position: absolute;
+  left: 0;
+  top: -2px;
+}
+
+/* Testimonials */
+.testimonials-section {
+  margin-top: 4rem;
+  text-align: center;
+  padding: 30px 0;
+  background-color: #f8f9fa; /* Light background for separation */
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.testimonials-section h4 {
+  color: #023047; /* Match the primary color */
+  margin-bottom: 40px;
+  font-size: 1.75rem; /* Larger heading */
+  font-weight: 700; /* Bolder for emphasis */
+  letter-spacing: 0.5px;
+}
+
+.testimonial {
+  margin-bottom: 2rem;
+  padding: 25px;
+  background-color: #ffffff; /* Pure white for a clean look */
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-left: 4px solid #fb8500; /* Left border for a formal touch */
+}
+
+.testimonial:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial p {
+  font-style: italic;
+  color: #555; /* Softer color for the quote */
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.testimonial-author {
+  font-weight: 600; /* Bolder for the author */
+  font-size: 0.95rem;
+  color: #023047; /* Match the primary color */
+}
