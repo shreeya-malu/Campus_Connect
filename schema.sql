@@ -164,3 +164,30 @@ CREATE TABLE IF NOT EXISTS activity_log (
     details TEXT,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+
+-- Table 17 opportunity - admin approval Table
+
+CREATE TABLE opportunity_requests (
+    request_id INT(11) NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    opportunity_type ENUM(
+        'job',
+        'Internship',
+        'hackathon',
+        'Scholarship',
+        'Upskill Program',
+        'Fellowship',
+        'Mentorship Program',
+        'Conference'
+    ) NOT NULL,
+    requested_by INT(11) NOT NULL,
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (request_id),
+    KEY (requested_by)
+);
+
+
+
