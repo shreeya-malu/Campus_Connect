@@ -10,17 +10,15 @@ CREATE TABLE IF NOT EXISTS Users (
     is_active TINYINT(1) NOT NULL
 );
 
--- Table 2: Resources
-CREATE TABLE IF NOT EXISTS Resources (
-    Resource_id INT PRIMARY KEY AUTO_INCREMENT,
-    Contributor_id INT NOT NULL,
-    Domain_id INT NOT NULL,
-    ResourceType_id INT NOT NULL,
-    Link VARCHAR(255),
-    FOREIGN KEY (Contributor_id) REFERENCES Contributors(Contributor_id),
-    FOREIGN KEY (Domain_id) REFERENCES Domains(Domain_id),
-    FOREIGN KEY (ResourceType_id) REFERENCES ResourceTypes(ResourceType_id)
+-- Table 13: CarouselItem
+CREATE TABLE IF NOT EXISTS CarouselItem (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    image_url VARCHAR(255) NOT NULL,
+    link VARCHAR(255),
+    title VARCHAR(100),
+    description TEXT
 );
+
 
 -- Table 3: Contributors
 CREATE TABLE IF NOT EXISTS Contributors (
@@ -41,6 +39,60 @@ CREATE TABLE IF NOT EXISTS ResourceTypes (
     ResourceType_name VARCHAR(100) NOT NULL
 );
 
+-- Table 7: OpportunityTypes
+CREATE TABLE IF NOT EXISTS OpportunityTypes (
+    type_id INT PRIMARY KEY AUTO_INCREMENT,
+    type_name VARCHAR(100) NOT NULL
+);
+
+-- Table 10: News
+CREATE TABLE IF NOT EXISTS News (
+    news_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(100) NOT NULL,
+    content TEXT,
+    category VARCHAR(50),
+    created_at DATETIME NOT NULL
+);
+
+-- Table 15: Buildings
+CREATE TABLE IF NOT EXISTS Buildings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    latitude DECIMAL(9,6) NOT NULL,
+    longitude DECIMAL(9,6) NOT NULL
+);
+
+-- Table 17: Alumnae
+CREATE TABLE IF NOT EXISTS Alumnae (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    branch VARCHAR(100),
+    role VARCHAR(20),
+    passing_date DATE,
+    Deactivated_on DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+-- Table 2: Resources
+CREATE TABLE IF NOT EXISTS Resources (
+    Resource_id INT PRIMARY KEY AUTO_INCREMENT,
+    Contributor_id INT NOT NULL,
+    Domain_id INT NOT NULL,
+    ResourceType_id INT NOT NULL,
+    Link VARCHAR(255),
+    FOREIGN KEY (Contributor_id) REFERENCES Contributors(Contributor_id),
+    FOREIGN KEY (Domain_id) REFERENCES Domains(Domain_id),
+    FOREIGN KEY (ResourceType_id) REFERENCES ResourceTypes(ResourceType_id)
+);
+
+
+
+
+
+
 -- Table 6: Opportunities
 CREATE TABLE IF NOT EXISTS Opportunities (
     opp_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -51,11 +103,6 @@ CREATE TABLE IF NOT EXISTS Opportunities (
     FOREIGN KEY (posted_by) REFERENCES Users(id)
 );
 
--- Table 7: OpportunityTypes
-CREATE TABLE IF NOT EXISTS OpportunityTypes (
-    type_id INT PRIMARY KEY AUTO_INCREMENT,
-    type_name VARCHAR(100) NOT NULL
-);
 
 -- Table 8: Collaborations
 CREATE TABLE IF NOT EXISTS Collaborations (
@@ -80,14 +127,6 @@ CREATE TABLE IF NOT EXISTS Collaborators (
     FOREIGN KEY (collaboration_id) REFERENCES Collaborations(collaboration_id)
 );
 
--- Table 10: News
-CREATE TABLE IF NOT EXISTS News (
-    news_id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(100) NOT NULL,
-    content TEXT,
-    category VARCHAR(50),
-    created_at DATETIME NOT NULL
-);
 
 -- Table 11: NewsRequests
 CREATE TABLE IF NOT EXISTS NewsRequests (
@@ -111,14 +150,6 @@ CREATE TABLE IF NOT EXISTS DomainRequests (
     FOREIGN KEY (requested_by) REFERENCES Users(id)
 );
 
--- Table 13: CarouselItem
-CREATE TABLE IF NOT EXISTS CarouselItem (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    image_url VARCHAR(255) NOT NULL,
-    link VARCHAR(255),
-    title VARCHAR(100),
-    description TEXT
-);
 
 -- Table 14: Events
 CREATE TABLE IF NOT EXISTS Events (
@@ -128,13 +159,6 @@ CREATE TABLE IF NOT EXISTS Events (
     FOREIGN KEY (building_id) REFERENCES Buildings(id)
 );
 
--- Table 15: Buildings
-CREATE TABLE IF NOT EXISTS Buildings (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    latitude DECIMAL(9,6) NOT NULL,
-    longitude DECIMAL(9,6) NOT NULL
-);
 
 -- Table 16: Activity log
 CREATE TABLE IF NOT EXISTS Activity_log (
@@ -148,14 +172,3 @@ CREATE TABLE IF NOT EXISTS Activity_log (
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
--- Table 17: Alumnae
-CREATE TABLE IF NOT EXISTS Alumnae (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    branch VARCHAR(100),
-    role VARCHAR(20),
-    passing_date DATE,
-    Deactivated_on DATETIME DEFAULT CURRENT_TIMESTAMP
-);
