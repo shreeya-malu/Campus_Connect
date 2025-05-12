@@ -631,3 +631,13 @@ hr{
     100% { transform: translateX(-100%); }
   }
   
+
+  .news-ticker {
+  position: absolute;
+  animation: scrollNews 20s linear infinite;
+  animation-play-state: running; /* default state */
+}
+
+.news-ticker:hover {
+  animation-play-state: paused; /* pauses on hover */
+}
