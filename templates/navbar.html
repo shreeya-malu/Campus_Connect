@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}"/>
+</head>
+<body>
+    <div id="navbar_w">
+      <a href="/home">
+        <div id="logo">
+            <img src="../static/Assets/logo squarish.png">
+        </div>
+      </a>
+       
+        <div id="navbar">
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/opportunities">Opportunities</a></li>
+                <li><a href="/resources">Resources</a></li>
+                <li><a href="/news">News</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+                <li><a href="/about">About Us</a></li>                   
+            </ul>  
+        </div> 
+        {% if session.get('name') or session.get('role') %}
+        <!-- Profile Icon (visible when user is logged in OR it's a guest user) -->
+        <div id="profile-section">
+            <div class="profile-icon" id="toggle-dashboard">
+                <img src="{{ url_for('static', filename='images/profile-icon.png') }}" alt="Profile" />
+            </div>
+        </div>
+        {% else %}
+        <!-- Auth Buttons (visible only when NOT logged in or a guest) -->
+        <div id="auth-buttons">
+            <button id="login-btn">Login/Sign up</button>
+        </div>
+        {% endif %}
+
+
+        <!-- Include the Dashboard Drawer -->
+        <!-- dashboard.html -->
+        <div id="dashboard-drawer" class="dashboard-closed">
+        <!-- Close Button -->
+        <button id="close-dashboard" class="close-btn">&times;</button>
+
+        <div class="dashboard-header">
+            <img src="{{ url_for('static', filename='images/profile-icon.png') }}" alt="Profile" />
+            <div class="user-info">
+            <h3>{{ session.get('name') }}</h3>
+            <p>{{ session.get('role') }}</p>
+            <p>{{ session.get('branch') }}</p>
+        </div>
+        </div>
+
+        <ul class="dashboard-links">
+            <li><button id="check-request-btn">Check Request Status</button></li>
+            {% if session.get('role') == 'admin' %}
+            <li><a href="{{ url_for('view_news_requests') }}">Manage News Requests</a></li>
+            <li><a href="{{ url_for('activity_log') }}">View Activity Log</a></li>
+            <li><a href="{{ url_for('add_event') }}">Add an Event to the Map</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('logout') }}" style="color: black; background-color: #A76545;">Logout</a></li>
+        </ul>
+    </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='login.js') }}"></script>
+</body>
+</html>
