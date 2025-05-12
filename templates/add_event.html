@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Event | Admin Panel</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='events.css') }}">
+</head>
+<body>
+     <!-- Back to homepage button in the top-left corner -->
+    <a href="/" class="back-button">Back to Homepage</a>
+    
+  <div class="container">
+    <h1>Add New Event</h1>
+    <form id="eventForm" method="POST" action="/add-event">
+      <div class="form-group">
+        <label for="event_name">Event Name<span>*</span></label>
+        <input type="text" id="event_name" name="event_name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="building_id">Building ID</label>
+        <input type="number" id="building_id" name="building_id" min="1" required>
+      </div>
+
+      <button type="submit" class="btn">Add Event</button>
+    </form>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </div>
+ <div class="table-container">
+  <h2>Building Reference Table</h2>
+  <table class="buildings-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Building Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for building in buildings %}
+      <tr>
+        <td>{{ building[0] }}</td>
+        <td>{{ building[1] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+</body>
+</html>
