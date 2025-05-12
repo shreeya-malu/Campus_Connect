@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS activity_log (
 
 -- Table 17 opportunity - admin approval Table
 
-CREATE TABLE opportunity_requests IF NOT EXISTS (
+CREATE TABLE IF NOT EXISTS opportunity_requests  (
     request_id INT(11) NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
