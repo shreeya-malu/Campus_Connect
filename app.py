@@ -316,6 +316,865 @@ def activity_log():
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html', role=session.get('role'))
+
+
+#Reema's app.py
+
+@app.route('/login')
+def login():
+    return render_template("SignIn.html")
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json(force=True)
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+    passing_date = data.get('passing_date')
+    branch = data.get('branch')
+    role = data.get('role')
+
+    if not all([name, email, password, passing_date, branch, role]):
+        return jsonify({'error': 'All fields are required'}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT email FROM Users WHERE email = %s", (email,))
+        if cursor.fetchone():
+            return jsonify({'error': 'Email already registered'}), 409
+            
+        cursor.execute(
+            "INSERT INTO Users (username, email, password, passing_date, branch, role) VALUES (%s, %s, %s, %s, %s, %s)",
+            (name, email, password, passing_date, branch, role)
+        )
+        conn.commit()
+        return jsonify({'message': 'Signup successful!'}), 201
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/signin', methods=['POST'])
+def signin():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    is_guest = data.get('is_guest', False)
+
+    if not email or not password:
+        return jsonify({'error': 'Email and Password required'}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        if is_guest:
+            # Create a guest session without database checks
+            session['user_id'] = 0
+            session['username'] = 'Guest'
+            session['role'] = 'guest'
+            session['is_guest'] = True
+            return jsonify({'message': 'Welcome guest!', 'is_guest': True}), 200
+
+        # Check current users first
+        cursor.execute("SELECT * FROM Users WHERE email = %s AND password = %s", (email, password))
+        user = cursor.fetchone()
+
+        if user:
+            # Check if user has graduated
+            if user['passing_date']:
+                user_passing_date = user['passing_date']
+                if isinstance(user_passing_date, str):
+                    user_passing_date = datetime.strptime(user_passing_date, '%Y-%m-%d').date()
     
+                if user_passing_date <= date.today():
+                # Move to Alumnae table
+                    cursor.execute("""  
+                        INSERT INTO Alumnae 
+                        (id, name, email, password, passing_date, branch, role)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        user['user_id'], user['username'], user['email'], user['password'],
+                        user['passing_date'], user['branch'], user['role']
+                    ))
+                    cursor.execute("DELETE FROM Users WHERE id = %s", (user['user_id'],))
+                    conn.commit()
+                
+                    session['user_id'] = user['user_id']
+                    session['name'] = user['username']
+                    session['role'] = 'guest'
+                    session['is_guest'] = True
+                    return jsonify({
+                    'error': 'Your account has expired. Please use Guest Login.'
+                    }), 403
+
+            
+            # Current active student
+            session['user_id'] = user['user_id']
+            session['name'] = user['username']
+            session['role'] = user['role']
+            session['is_guest'] = False
+            # In the successful login block (around line 200), modify the return statement:
+            return jsonify({
+                'message': f"Welcome {user['username']}!",
+                'is_guest': False,
+                'user': {
+                    'name': user['username'],
+                    'role': user['role'],
+                    'branch': user.get('branch', ''),
+                    'year': user.get('year', '')
+                }
+            }), 200
+
+        # Check if user is in Alumnae table
+        cursor.execute("SELECT * FROM Alumnae WHERE email = %s AND password = %s", (email, password))
+        alum = cursor.fetchone()
+        
+        if alum:
+            session['user_id'] = alum['id']
+            session['name'] = alum['name']
+            session['role'] = 'guest'
+            session['is_guest'] = True
+            return jsonify({
+                'message': f"Welcome {alum['name']}! (Guest access)",
+                'is_guest': True
+            }), 200
+
+        return jsonify({'error': 'Invalid credentials'}), 401
+
+    except Exception as e:
+        print(f"Login error: {str(e)}")  # Debug logging
+        return jsonify({'error': 'Login failed. Please try again.'}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/resources', methods=['GET'])
+def resources():
+    return render_template('resources.html')  # or jsonify() if returning JSON
+
+
+@app.route('/search_resource', methods=['POST'])
+def search_resource():
+    try:
+        data = request.get_json()
+        if not data:
+            print("No JSON data received")
+            return jsonify({'error': 'No data received'}), 400
+
+        year = data.get('year')
+        domain = data.get('domain')
+
+        print(f"Received search request - Year: {year}, Domain: {domain}")  # Debug log
+
+        if not year or not domain:
+            print("Missing year or domain")
+            return jsonify({'error': 'Year and Domain are required!'}), 400
+
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT rt.ResourceType_name AS ResourceType, r.Link
+            FROM Resources r
+            JOIN Contributors c ON r.Contributor_id = c.Contributor_id
+            JOIN Domains d ON r.Domain_id = d.Domain_id
+            JOIN ResourceTypes rt ON r.ResourceType_id = rt.ResourceType_id
+            WHERE c.Year = %s AND d.Domain_name = %s
+        """, (year, domain))
+
+        rows = cursor.fetchall()
+        print(f"Found {len(rows)} resources")  # Debug log
+        
+        formatted_results = [
+            {'ResourceType': row['ResourceType'], 'Link': row['Link']}
+            for row in rows
+        ]
+
+        return jsonify(formatted_results), 200
+
+    except Exception as e:
+        print(f"Search error: {str(e)}")
+        return jsonify({'error': "Failed to fetch resources. Please try again later."}), 500
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+
+@app.route('/add_resource', methods=['POST'])
+def add_resource():
+    if session.get('is_guest'):
+        return jsonify({'error': 'Guests are not allowed to contribute resources.'}), 403
+
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Please login to contribute resources.'}), 401
+
+    try:
+        data = request.get_json()
+        name = data.get('name')
+        year = data.get('year')
+        domain = data.get('domain')
+        resources = data.get('resources', [])
+
+        if not name or not year or not domain or not resources:
+            return jsonify({'error': 'Missing required fields!'}), 400
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Verify domain is approved
+        cursor.execute("""
+            SELECT d.Domain_id 
+            FROM Domains d
+            LEFT JOIN domain_requests dr ON d.Domain_name = dr.domain_name
+            WHERE d.Domain_name = %s AND (dr.status IS NULL OR dr.status = 'approved')
+        """, (domain,))
+        domain_result = cursor.fetchone()
+
+        if not domain_result:
+            return jsonify({
+                'error': 'This domain is not yet approved. Please wait for admin approval.',
+                'requires_approval': True
+            }), 400
+
+        # Handle contributor
+        cursor.execute("SELECT Contributor_id FROM Contributors WHERE Name=%s AND Year=%s", (name, year))
+        contributor = cursor.fetchone()
+        if contributor:
+            contributor_id = contributor[0]
+        else:
+            cursor.execute("INSERT INTO Contributors (Name, Year) VALUES (%s, %s)", (name, year))
+            contributor_id = cursor.lastrowid
+
+        # Handle domain
+        cursor.execute("SELECT Domain_id FROM Domains WHERE Domain_name=%s", (domain,))
+        domain_result = cursor.fetchone()
+        if domain_result:
+            domain_id = domain_result[0]
+        else:
+            cursor.execute("INSERT INTO Domains (Domain_name) VALUES (%s)", (domain,))
+            domain_id = cursor.lastrowid
+
+        # Process each resource
+        for resource in resources:
+            r_type = resource.get('type')
+            r_link = resource.get('link')
+            if not r_type or not r_link:
+                continue
+
+            # Handle resource type
+            cursor.execute("SELECT ResourceType_id FROM ResourceTypes WHERE ResourceType_name=%s", (r_type,))
+            type_result = cursor.fetchone()
+            if type_result:
+                type_id = type_result[0]
+            else:
+                cursor.execute("INSERT INTO ResourceTypes (ResourceType_name) VALUES (%s)", (r_type,))
+                type_id = cursor.lastrowid
+
+            # Insert resource
+            cursor.execute(
+                "INSERT INTO Resources (Contributor_id, Domain_id, ResourceType_id, Link) VALUES (%s, %s, %s, %s)",
+                (contributor_id, domain_id, type_id, r_link)
+            )
+            resource_id = cursor.lastrowid
+
+            # Log activity for each resource added
+            cursor.execute("""
+                INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                VALUES (%s, 'create', 'Resources', %s, %s)
+            """, (
+                user_id,
+                resource_id,
+                f"Resource added by user_id={user_id} (Contributor: {name}, Year: {year}, Domain: {domain}, Type: {r_type})"
+            ))
+
+        conn.commit()
+        return jsonify({'message': 'Resources added successfully!'}), 200
+
+    except Exception as e:
+        conn.rollback()
+        print(f"Resource addition error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/check_session')
+def check_session():
+    if 'user_id' in session:
+        return jsonify({
+            'logged_in': True,
+            'user': {
+                'name': session.get('name'),
+                'role': session.get('role'),
+                'branch': session.get('branch', ''),
+                'year': session.get('year', '')
+            }
+        })
+    return jsonify({'logged_in': False})
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You have been logged out', 'info')
+    return redirect(url_for('home'))
+
+@app.route('/get_domains')
+def get_domains():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT Domain_name FROM Domains")
+        domains = [row[0] for row in cursor.fetchall()]
+        return jsonify(domains)
+    except Exception as e:
+        print(f"Error fetching domains: {str(e)}")
+        return jsonify([])
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/add_domain', methods=['POST'])
+def add_domain():
+    if session.get('is_guest'):
+        return jsonify({'error': 'Guests cannot add domains'}), 403
+
+    data = request.get_json()
+    domain = data.get('domain')
+    user_id = session.get('user_id')
+    user_role = session.get('role')
+
+    if not domain:
+        return jsonify({'error': 'Domain name required'}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        if user_role == 'admin':
+            # Admin directly adds domain
+            cursor.execute("INSERT INTO Domains (Domain_name) VALUES (%s)", (domain,))
+            domain_id = cursor.lastrowid
+
+            # Log the creation activity
+            cursor.execute("""
+                INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                VALUES (%s, 'create', 'Domains', %s, %s)
+            """, (user_id, domain_id, f"Admin added domain '{domain}'"))
+
+            conn.commit()
+            return jsonify({'message': 'Domain added successfully'}), 200
+
+        else:
+            # Non-admin submits a domain request
+            cursor.execute("""
+                INSERT INTO domain_requests (domain_name, requested_by) VALUES (%s, %s)
+            """, (domain, user_id))
+            request_id = cursor.lastrowid
+
+            # Log the request activity
+            cursor.execute("""
+                INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                VALUES (%s, 'request', 'domain_requests', %s, %s)
+            """, (user_id, request_id, f"User requested domain '{domain}'"))
+
+            conn.commit()
+            return jsonify({'message': 'Your request has been sent to admin'}), 200
+
+    except mysql.connector.IntegrityError:
+        return jsonify({'message': 'Domain already exists'}), 200
+    except Exception as e:
+        print(f"Error handling domain request: {str(e)}")
+        return jsonify({'error': 'Failed to process request'}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/admin/handle_domain/<int:request_id>', methods=['POST'])
+def handle_domain_request(request_id):
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    user_id = session.get('user_id')  # Admin's user ID for logging
+
+    if not user_id:
+        return jsonify({'error': 'User not authenticated'}), 403
+
+    action = request.form.get('action')
+
+    if not action:
+        return jsonify({'error': 'Action required'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        cursor.execute("SELECT domain_name FROM domain_requests WHERE request_id = %s", (request_id,))
+        request_data = cursor.fetchone()
+        
+        if not request_data:
+            return jsonify({'error': 'Request not found'}), 404
+
+        domain_name = request_data['domain_name']
+
+        if action == 'approve':
+            # Add to domains table if not exists
+            cursor.execute("""
+                INSERT INTO Domains (Domain_name)
+                SELECT %s FROM DUAL
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM Domains WHERE Domain_name = %s
+                )
+            """, (domain_name, domain_name))
+            
+            # Update any resources waiting for this domain
+            cursor.execute("""
+                UPDATE Resources r
+                JOIN Domains d ON r.Domain_id = d.Domain_id
+                SET r.Domain_id = (
+                    SELECT Domain_id FROM Domains WHERE Domain_name = %s LIMIT 1
+                )
+                WHERE d.Domain_name = %s
+            """, (domain_name, domain_name))
+            
+            cursor.execute("UPDATE domain_requests SET status = 'approved' WHERE request_id = %s", (request_id,))
+
+            # Log activity
+            cursor.execute("""
+                INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                VALUES (%s, 'update', 'domain_requests', %s, %s)
+            """, (user_id, request_id, f"Domain request '{domain_name}' approved by admin (user_id={user_id})"))
+
+        elif action == 'reject':
+            cursor.execute("UPDATE domain_requests SET status = 'rejected' WHERE request_id = %s", (request_id,))
+            
+            cursor.execute("""
+                DELETE r FROM Resources r
+                JOIN Domains d ON r.Domain_id = d.Domain_id
+                WHERE d.Domain_name = %s
+            """, (domain_name,))
+
+            # Log activity
+            cursor.execute("""
+                INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                VALUES (%s, 'update', 'domain_requests', %s, %s)
+            """, (user_id, request_id, f"Domain request '{domain_name}' rejected by admin (user_id={user_id})"))
+
+        conn.commit()
+        return jsonify({'message': f'Request {action}d successfully'}), 200
+
+    except Exception as e:
+        conn.rollback()
+        print(f"Error handling domain request: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/cleanup_pending_domains', methods=['POST'])
+def cleanup_pending_domains():
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    user_id = session.get('user_id')  # Fetch the admin's user ID
+
+    if not user_id:
+        return jsonify({'error': 'User not authenticated'}), 403
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Delete resources associated with rejected domains
+        cursor.execute("""
+            DELETE r FROM Resources r
+            JOIN Domains d ON r.Domain_id = d.Domain_id
+            JOIN domain_requests dr ON d.Domain_name = dr.domain_name
+            WHERE dr.status = 'rejected'
+        """)
+        
+        affected_rows = cursor.rowcount  # Count how many rows were deleted
+
+        # Log the cleanup activity
+        cursor.execute("""
+            INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+            VALUES (%s, 'delete', 'Resources', 0, %s)
+        """, (
+            user_id,
+            f"Deleted {affected_rows} resource(s) linked to rejected domain requests by admin user_id={user_id}"
+        ))
+
+        conn.commit()
+        return jsonify({'message': f'Cleanup completed: {affected_rows} resource(s) deleted'}), 200
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/request-status')
+def request_status():
+    # Debug session data
+    print(f"Session data in /request-status: {dict(session)}")
+    
+    if not session.get('user_id'):
+        print("No user_id in session - redirecting to login")
+        return redirect(url_for('login'))
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        if session.get('role') == 'admin':
+            cursor.execute("""
+                SELECT dr.*, u.username as requester_name 
+                FROM domain_requests dr
+                JOIN Users u ON dr.requested_by = u.user_id
+                WHERE dr.status = 'pending'
+                ORDER BY request_date DESC
+            """)
+        else:
+            cursor.execute("""
+                SELECT domain_name, status, request_date 
+                FROM domain_requests 
+                WHERE requested_by = %s
+                ORDER BY request_date DESC
+            """, (session['user_id'],))
+        
+        requests = cursor.fetchall()
+        return render_template('Request.html', 
+                            requests=requests, 
+                            is_admin=(session.get('role') == 'admin'))
+    
+    except Exception as e:
+        print(f"Error in request_status: {str(e)}")
+        return redirect(url_for('login'))
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/admin/requests')
+def admin_requests():
+    if not session.get('user_id') or session.get('role') != 'admin':
+        return redirect('/login')
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    cursor.execute("""
+        SELECT dr.*, u.username as requester_name 
+        FROM domain_requests dr
+        JOIN Users u ON dr.requested_by = u.user_id
+        WHERE dr.status = 'pending'
+        ORDER BY dr.request_date DESC
+    """)
+    
+    requests = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    return render_template('Request.html', requests=requests, is_admin=True)
+
+#ishwari's app.py
+# Create tables if they don't exist (run once)
+def initialize_database():
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor()
+        
+        # Create OpportunityTypes table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS opportunitytypes (
+            type_id INT AUTO_INCREMENT PRIMARY KEY,
+            type_name VARCHAR(100) NOT NULL
+        )
+        """)
+        
+        # Create Opportunities table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS opportunities (
+            opp_id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(100) NOT NULL,
+            link VARCHAR(255),
+            posted_by INT NOT NULL,
+            type_id INT,
+            FOREIGN KEY (posted_by) REFERENCES users(user_id),
+            FOREIGN KEY (type_id) REFERENCES opportunitytypes(type_id)
+        )
+        """)
+        
+        # Create Collaborations table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS collaborations (
+            collaboration_id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            description TEXT NOT NULL,
+            collaboration_type ENUM('Project','Research Paper','Hackathon Team','Mentorship') NOT NULL,
+            posted_by VARCHAR(255),
+            contact_link VARCHAR(255),
+            deadline DATE,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        
+        # Create Collaborators table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS collaborators (
+            Contributor_id INT AUTO_INCREMENT PRIMARY KEY,
+            Name VARCHAR(100) NOT NULL,
+            Year VARCHAR(50) NOT NULL
+        )
+        """)
+        
+        # Insert some initial opportunity types if empty
+        cursor.execute("SELECT COUNT(*) FROM opportunitytypes")
+        if cursor.fetchone()[0] == 0:
+            cursor.executemany("""
+            INSERT INTO opportunitytypes (type_name) VALUES (%s)
+            """, [('job',), ('Internship',), ('hackathon',), ('Scholarship',), ('Upskill Program',),
+                 ('Fellowship',), ('Mentorship Program',), ('Conference',)])
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+# Initialize database (run once)
+initialize_database()
+
+
+@app.route('/add_opportunity', methods=['POST'])
+def add_opportunity():
+    print("Adding opportunity")
+    title = request.form.get('title')
+    link = request.form.get('link')
+    opportunity_type = request.form.get('type')
+    user_id = session.get('user_id')  # Get the user ID from session
+
+    print("Opportunity Type:", opportunity_type)
+    print("Opportunity Title:", title)
+    print("Opportunity Link:", link)
+
+    if not title:
+        flash('Title is required', 'danger')
+        return redirect(url_for('home'))
+    
+    if not user_id:
+        flash('User not authenticated', 'danger')
+        return redirect(url_for('home'))
+
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            # Insert into opportunities
+            cursor.execute("""
+                INSERT INTO opportunities (title, link, posted_by, type_id)
+                VALUES (%s, %s, %s, %s)
+            """, (title, link, user_id, opportunity_type))
+
+            opportunity_id = cursor.lastrowid  # Get the inserted ID
+
+            # Log the activity
+            cursor.execute("""
+                INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                VALUES (%s, 'create', 'opportunities', %s, %s)
+            """, (user_id, opportunity_id, f"Opportunity '{title}' added by user_id={user_id}"))
+
+            conn.commit()
+            flash('Opportunity added successfully!', 'success')
+        except mysql.connector.Error as err:
+            flash(f'Error adding opportunity: {err}', 'danger')
+        finally:
+            cursor.close()
+            conn.close()
+    
+    return redirect(url_for('home'))
+@app.route('/add_collaboration', methods=['POST'])
+def add_collaboration():
+    if 'user_id' not in session:
+        flash('Please login first', 'danger')
+        return redirect(url_for('signin'))
+
+    title = request.form.get('title')
+    description = request.form.get('description')
+    collaboration_type = request.form.get('collaboration_type')
+    contact_link = request.form.get('contact_link')
+    deadline = request.form.get('deadline')
+    
+    if not title or not description or not collaboration_type:
+        flash('Title, description and type are required', 'danger')
+        return redirect(url_for('home'))
+
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            # Insert into collaborations table
+            cursor.execute("""
+                INSERT INTO collaborations (title, description, collaboration_type, posted_by, contact_link, deadline)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (title, description, collaboration_type, session['user_id'], contact_link, deadline))
+            
+            collaboration_id = cursor.lastrowid  # Get the ID of the inserted collaboration
+
+            # Log activity
+            cursor.execute("""
+                INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                VALUES (%s, 'create', 'collaborations', %s, %s)
+            """, (
+                session['user_id'],
+                collaboration_id,
+                f"Collaboration '{title}' added by user_id={session['user_id']}"
+            ))
+
+            conn.commit()
+            flash('Collaboration added successfully!', 'success')
+        except mysql.connector.Error as err:
+            flash(f'Error adding collaboration: {err}', 'danger')
+        finally:
+            cursor.close()
+            conn.close()
+
+    return redirect(url_for('home'))
+
+
+@app.route('/get_opportunity_types')
+def get_opportunity_types():
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM opportunitytypes")
+        types = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return {'types': types}
+    return {'types': []}
+
+@app.route('/explore')
+def explore():
+    search_query = request.args.get('search', '')
+    print("Search query:", search_query)
+    
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Search opportunities with the query
+        cursor.execute("""
+        SELECT o.*, u.username as poster_name, ot.type_name
+        FROM opportunities o
+        LEFT JOIN users u ON o.posted_by = u.user_id
+        LEFT JOIN opportunitytypes ot ON o.type_id = ot.type_id
+        WHERE o.title LIKE %s OR COALESCE(ot.type_name, '') LIKE %s OR COALESCE(o.description, '') LIKE %s
+        ORDER BY o.opp_id DESC
+        """, (f'%{search_query}%', f'%{search_query}%', f'%{search_query}%'))
+        opportunities = cursor.fetchall()
+        print("Opportunities fetched:", opportunities)
+        
+        cursor.close()
+        conn.close()
+        
+        return render_template('explore.html', 
+                            opportunities=opportunities,
+                            search_query=search_query)
+    print("Database connection failed")
+    return render_template('explore.html', opportunities=[], search_query=search_query)
+
+@app.route('/collaborate')
+def collaborate():
+    search_query = request.args.get('search', '')
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Search collaborations with the query
+        cursor.execute("""
+        SELECT c.*, u.username as poster_name
+        FROM collaborations c
+        LEFT JOIN users u ON c.posted_by = u.user_id
+        WHERE c.title LIKE %s OR c.collaboration_type LIKE %s OR c.description LIKE %s
+        ORDER BY c.created_at DESC
+        """, (f'%{search_query}%', f'%{search_query}%', f'%{search_query}%'))
+        collaborations = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        return render_template('/', 
+                            collaborations=collaborations,
+                            search_query=search_query,
+                            active_tab='collaborate')  # Set Collaborate tab as active
+    return render_template('opportunities.html', 
+                         collaborations=[],
+                         opportunities=[],
+                         opportunity_types=[],
+                         search_query=search_query,
+                         active_tab='collaborate')
+
+    # New routes for Contact Us and About Us pages
+@app.route('/contact')
+def contact_us():
+    return render_template('contactus.html')
+
+@app.route('/about')
+def about_us():
+    return render_template('aboutus.html')
+
+@app.route('/opportunities')
+def opportunities():
+    search_query = request.args.get('search', '')
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get opportunities with search
+        cursor.execute("""
+        SELECT o.*, u.username as poster_name, ot.type_name
+        FROM opportunities o
+        JOIN users u ON o.posted_by = u.user_id
+        LEFT JOIN opportunitytypes ot ON o.type_id = ot.type_id
+        WHERE o.title LIKE %s OR ot.type_name LIKE %s
+        ORDER BY o.opp_id DESC
+        """, (f'%{search_query}%', f'%{search_query}%'))
+        opportunities = cursor.fetchall()
+        
+        # Get collaborations with search
+        cursor.execute("""
+        SELECT c.*, u.username as poster_name
+        FROM collaborations c
+        LEFT JOIN users u ON c.posted_by = u.user_id
+        WHERE c.title LIKE %s OR c.collaboration_type LIKE %s OR c.description LIKE %s
+        ORDER BY c.created_at DESC
+        """, (f'%{search_query}%', f'%{search_query}%', f'%{search_query}%'))
+        collaborations = cursor.fetchall()
+        
+        # Get opportunity types
+        cursor.execute("SELECT * FROM opportunitytypes")
+        opportunity_types = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        return render_template('opportunities.html', 
+                            opportunities=opportunities,
+                            collaborations=collaborations,
+                            search_query=search_query,
+                            opportunity_types=opportunity_types)  # Pass opportunity_types
+    return render_template('opportunities.html', 
+                         opportunities=[], 
+                         collaborations=[],
+                         search_query=search_query,
+                         opportunity_types=[])  # Pass empty list if DB fails
+
 if __name__ == '__main__':
     app.run(debug=True)
