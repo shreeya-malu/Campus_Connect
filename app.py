@@ -1219,7 +1219,52 @@ def contact_us():
 @app.route('/about')
 def about_us():
     return render_template('aboutus.html')
-
+   
+@app.route('/opportunities')
+def opportunities():
+    search_query = request.args.get('search', '')
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get opportunities with search
+        cursor.execute("""
+        SELECT o.*, u.username as poster_name, ot.type_name
+        FROM opportunities o
+        JOIN users u ON o.posted_by = u.user_id
+        LEFT JOIN opportunitytypes ot ON o.type_id = ot.type_id
+        WHERE o.title LIKE %s OR ot.type_name LIKE %s
+        ORDER BY o.opp_id DESC
+        """, (f'%{search_query}%', f'%{search_query}%'))
+        opportunities = cursor.fetchall()
+        
+        # Get collaborations with search
+        cursor.execute("""
+        SELECT c.*, u.username as poster_name
+        FROM collaborations c
+        LEFT JOIN users u ON c.posted_by = u.user_id
+        WHERE c.title LIKE %s OR c.collaboration_type LIKE %s OR c.description LIKE %s
+        ORDER BY c.created_at DESC
+        """, (f'%{search_query}%', f'%{search_query}%', f'%{search_query}%'))
+        collaborations = cursor.fetchall()
+        
+        # Get opportunity types
+        cursor.execute("SELECT * FROM opportunitytypes")
+        opportunity_types = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        return render_template('opportunities.html', 
+                            opportunities=opportunities,
+                            collaborations=collaborations,
+                            search_query=search_query,
+                            opportunity_types=opportunity_types)  # Pass opportunity_types
+    return render_template('opportunities.html', 
+                         opportunities=[], 
+                         collaborations=[],
+                         search_query=search_query,
+                         opportunity_types=[])  # Pass empty list if DB fails
 
 #ishwari's code ends
 if __name__ == '__main__':
