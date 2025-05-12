@@ -1,15 +1,18 @@
-async function fetchNews() {
+async function fetchNews() 
+{
   try {
     const response = await fetch('/get-news');
     const newsItems = await response.json();
 
     // Define the categories and their corresponding ticker IDs
-    const categories = ['fy', 'sy', 'ty', 'btech'];
+    const categories = ['fy', 'sy', 'ty', 'btech','all', 'others'];
     const tickers = {
       fy: document.getElementById('newsTicker-fy'),
       sy: document.getElementById('newsTicker-sy'),
       ty: document.getElementById('newsTicker-ty'),
       btech: document.getElementById('newsTicker-btech'),
+      all: document.getElementById('newsTicker-all'),
+      others: document.getElementById('newsTicker-others')
     };
 
     // Clear existing content
