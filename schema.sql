@@ -190,4 +190,4 @@ CREATE TABLE opportunity_requests IF NOT EXISTS (
 );
 
 
-INSERT INTO buildings IF NOT EXISTS (name, latitude, longitude) VALUES ('IT Department', 18.48597, 73.81602), ('Main Building', 18.48639, 73.81589), ('Instru Building', 18.48646, 73.81649), ('Suswaad Canteen', 18.48620, 73.81671),('Mechanical Building', 18.48552, 73.81645);
+INSERT INTO buildings (name, latitude, longitude) VALUES ('IT Department', 18.48597, 73.81602), ('Main Building', 18.48639, 73.81589), ('Instru Building', 18.48646, 73.81649), ('Suswaad Canteen', 18.48620, 73.81671),('Mechanical Building', 18.48552, 73.81645);
