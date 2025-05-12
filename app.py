@@ -1088,7 +1088,7 @@ def contact_us():
 def about_us():
     return render_template('aboutus.html')
 
-@app.route('/opportunities')
+app.route('/opportunities')
 def opportunities():
     search_query = request.args.get('search', '')
     conn = get_db_connection()
