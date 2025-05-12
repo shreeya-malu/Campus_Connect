@@ -81,6 +81,7 @@ def home():
 
 from flask import session  # Add this import if not already
 
+
 @app.route('/submit', methods=['POST'])
 def submit_news():
     try:
@@ -321,10 +322,11 @@ def add_event():
 def activity_log():
     try:
         conn = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='admin123',
-        database='campus_portal',
+        "host":os.getenv("DB_HOST"),
+        "user":os.getenv("DB_USER"),
+        "password":os.getenv("DB_PASSWORD"),
+        "database":os.getenv("DB_NAME"),
+        "port":int(os.getenv("DB_PORT", 3306))
         )
         cursor = conn.cursor(dictionary=True)
 
@@ -909,194 +911,54 @@ def admin_requests():
     return render_template('Request.html', requests=requests, is_admin=True)
 
 #ishwari's app.py
-
 @app.route('/add_opportunity', methods=['POST'])
 def add_opportunity():
-    if session.get('is_guest'):
-        return jsonify({'error': 'Guests are not allowed to contribute resources.'}), 403
-
-    print("Adding opportunity request")
+    print("Adding opportunity")
     title = request.form.get('title')
     link = request.form.get('link')
     opportunity_type = request.form.get('type')
-    user_id = session.get('id')  # Corrected column name
+    user_id = session.get('user_id')  # Get the user ID from session
 
     print("Opportunity Type:", opportunity_type)
     print("Opportunity Title:", title)
     print("Opportunity Link:", link)
 
-    if not title or not opportunity_type:
-        flash('Title and Type are required', 'danger')
+    if not title:
+        flash('Title is required', 'danger')
         return redirect(url_for('home'))
-
+    
     if not user_id:
         flash('User not authenticated', 'danger')
         return redirect(url_for('home'))
 
     conn = get_db_connection()
-    if not conn:
-        flash('Database connection failed', 'danger')
-        return redirect(url_for('home'))
+    if conn:
+        cursor = conn.cursor()
+        try:
+            # Insert into opportunities
+            cursor.execute("""
+                INSERT INTO opportunities (title, link, posted_by, type_id)
+                VALUES (%s, %s, %s, %s)
+            """, (title, link, user_id, opportunity_type))
 
-    cursor = conn.cursor()
-    try:
-        cursor.execute("""
-            INSERT INTO opportunity_requests (title, description, opportunity_type, requested_by, status)
-            VALUES (%s, %s, %s, %s, 'pending')
-        """, (title, link, opportunity_type, user_id))
+            opportunity_id = cursor.lastrowid  # Get the inserted ID
 
-        request_id = cursor.lastrowid
+            # Log the activity
+            cursor.execute("""
+                INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                VALUES (%s, 'create', 'opportunities', %s, %s)
+            """, (user_id, opportunity_id, f"Opportunity '{title}' added by user_id={user_id}"))
 
-        cursor.execute("""
-            INSERT INTO activity_log (user_id, action_table, target_table, target_id, details)
-            VALUES (%s, 'opportunities', 'opportunity_requests', %s, %s)
-        """, (user_id, request_id, f"Opportunity request '{title}' submitted by user_id={user_id}"))
-
-        conn.commit()
-        flash('Opportunity request submitted successfully! Awaiting admin approval.', 'success')
-    except mysql.connector.Error as err:
-        flash(f'Error submitting opportunity request: {err}', 'danger')
-        conn.rollback()
-    finally:
-        cursor.close()
-        conn.close()
-
+            conn.commit()
+            flash('Opportunity added successfully!', 'success')
+        except mysql.connector.Error as err:
+            flash(f'Error adding opportunity: {err}', 'danger')
+        finally:
+            cursor.close()
+            conn.close()
+    
     return redirect(url_for('home'))
-
-
-@app.route('/admin/handle_opportunity/<int:request_id>', methods=['POST'])
-def handle_opportunity_request(request_id):
-    if session.get('role') != 'admin':
-        flash('Unauthorized access', 'danger')
-        return redirect(url_for('home'))
-
-    admin_id = session.get('id')
-    if not admin_id:
-        flash('Admin not authenticated', 'danger')
-        return redirect(url_for('home'))
-
-    action = request.form.get('action')
-    if not action:
-        flash('Action required', 'danger')
-        return redirect(url_for('home'))
-
-    conn = get_db_connection()
-    if not conn:
-        flash('Database connection failed', 'danger')
-        return redirect(url_for('home'))
-
-    cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("SELECT title, description, opportunity_type, requested_by FROM opportunity_requests WHERE request_id = %s", (request_id,))
-        request_data = cursor.fetchone()
-
-        if not request_data:
-            flash('Request not found', 'danger')
-            return redirect(url_for('home'))
-
-        title = request_data['title']
-        link = request_data['description']
-        opportunity_type = request_data['opportunity_type']
-        requested_by = request_data['requested_by']
-
-        if action == 'approve':
-            cursor.execute("SELECT type_id FROM opportunitytypes WHERE type_name = %s", (opportunity_type,))
-            type_result = cursor.fetchone()
-            if not type_result:
-                flash(f'Invalid opportunity type: {opportunity_type}', 'danger')
-                return redirect(url_for('home'))
-            type_id = type_result['type_id']
-
-            cursor.execute("""
-                INSERT INTO opportunities (title, description, link, posted_by, type_id)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (title, title, link, requested_by, type_id))  # description is title fallback
-
-            opportunity_id = cursor.lastrowid
-
-            cursor.execute("UPDATE opportunity_requests SET status = 'approved' WHERE request_id = %s", (request_id,))
-
-            cursor.execute("""
-                INSERT INTO activity_log (user_id, action_table, target_table, target_id, details)
-                VALUES (%s, 'opportunities', 'opportunities', %s, %s)
-            """, (admin_id, opportunity_id, f"Opportunity '{title}' approved from request {request_id} by admin user_id={admin_id}"))
-
-        elif action == 'reject':
-            cursor.execute("UPDATE opportunity_requests SET status = 'rejected' WHERE request_id = %s", (request_id,))
-            cursor.execute("""
-                INSERT INTO activity_log (user_id, action_table, target_table, target_id, details)
-                VALUES (%s, 'opportunities', 'opportunity_requests', %s, %s)
-            """, (admin_id, request_id, f"Opportunity request '{title}' rejected by admin user_id={admin_id}"))
-
-        else:
-            flash('Invalid action', 'danger')
-            return redirect(url_for('home'))
-
-        conn.commit()
-        flash(f'Opportunity request {action}d successfully', 'success')
-    except mysql.connector.Error as err:
-        flash(f'Error handling request: {err}', 'danger')
-        conn.rollback()
-    finally:
-        cursor.close()
-        conn.close()
-
-    return redirect(url_for('home'))
-
-
-@app.route('/admin/opportunities')
-def admin_opportunities():
-    print("Entering /admin/opportunities route")
-    if not session.get('id') or session.get('role') != 'admin':
-        print("Unauthorized: id=%s, role=%s" % (session.get('id'), session.get('role')))
-        flash('Unauthorized access', 'danger')
-        return redirect(url_for('home'))
-
-    conn = get_db_connection()
-    if not conn:
-        print("Database connection failed")
-        flash('Database connection failed', 'danger')
-        return redirect(url_for('home'))
-
-    cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("""
-            SELECT orq.*, u.username as requester_name 
-            FROM opportunity_requests orq
-            JOIN users u ON orq.requested_by = u.user_id
-            WHERE orq.status = 'pending'
-            ORDER BY orq.submitted_at DESC
-        """)
-        requests = cursor.fetchall()
-        print("Pending Requests:", requests)
-
-        cursor.execute("""
-            SELECT o.title, o.link, ot.type_name, u.username as poster_name
-            FROM opportunities o
-            JOIN users u ON o.posted_by = u.user_id
-            LEFT JOIN opportunitytypes ot ON o.type_id = ot.type_id
-            ORDER BY o.opp_id DESC
-            LIMIT 20
-        """)
-        approved_opportunities = cursor.fetchall()
-        print("Approved Opportunities:", approved_opportunities)
-
-    except mysql.connector.Error as err:
-        print(f"Database Error: {err}")
-        flash(f'Error fetching data: {err}', 'danger')
-        requests = []
-        approved_opportunities = []
-    finally:
-        cursor.close()
-        conn.close()
-
-    print("Rendering opp_approval.html with %d requests" % len(requests))
-    return render_template('opp_approval.html', requests=requests, approved_opportunities=approved_opportunities)
-
-
-
-
-
+   
 @app.route('/add_collaboration', methods=['POST'])
 def add_collaboration():
     if 'user_id' not in session:
@@ -1228,7 +1090,7 @@ def contact_us():
 def about_us():
     return render_template('aboutus.html')
 
-app.route('/opportunities')
+@app.route('/opportunities')
 def opportunities():
     search_query = request.args.get('search', '')
     conn = get_db_connection()
@@ -1272,8 +1134,8 @@ def opportunities():
                          opportunities=[], 
                          collaborations=[],
                          search_query=search_query,
-                         opportunity_types=[])  # Pass empty list if DB fails
-   
+                         opportunity_types=[])  # Pass empty list if DB fails   
+
 if __name__ == '__main__':
     app.run(debug=True)
 
