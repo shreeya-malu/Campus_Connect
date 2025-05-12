@@ -47,7 +47,8 @@ def initialize_database():
             conn.close()
     else:
         print("Could not establish database connection.")
-
+       
+initialize_database()  # Only for setup; remove in production
 
 @app.route('/')
 def index():
@@ -1134,6 +1135,5 @@ def opportunities():
                          opportunity_types=[])  # Pass empty list if DB fails
    
 if __name__ == '__main__':
-    initialize_database()  # Only for setup; remove in production
     app.run(debug=True)
 
