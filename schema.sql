@@ -1,5 +1,5 @@
 -- Table 1: Users
-CREATE TABLE IF NOT EXISTS Users (
+CREATE TABLE IF NOT EXISTS users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
@@ -11,32 +11,32 @@ CREATE TABLE IF NOT EXISTS Users (
 );
 
 -- Table 3: Contributors
-CREATE TABLE IF NOT EXISTS Contributors (
+CREATE TABLE IF NOT EXISTS contributors (
     Contributor_id INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(100) NOT NULL,
     Year INT
 );
 
 -- Table 4: Domains
-CREATE TABLE IF NOT EXISTS Domains (
+CREATE TABLE IF NOT EXISTS domains (
     Domain_id INT PRIMARY KEY AUTO_INCREMENT,
     Domain_name VARCHAR(100) NOT NULL
 );
 
 -- Table 5: ResourceTypes
-CREATE TABLE IF NOT EXISTS ResourceTypes (
+CREATE TABLE IF NOT EXISTS resourcetypes (
     ResourceType_id INT PRIMARY KEY AUTO_INCREMENT,
     ResourceType_name VARCHAR(100) NOT NULL
 );
 
 -- Table 7: OpportunityTypes
-CREATE TABLE IF NOT EXISTS OpportunityTypes (
+CREATE TABLE IF NOT EXISTS opportunitytypes (
     type_id INT PRIMARY KEY AUTO_INCREMENT,
     type_name VARCHAR(100) NOT NULL
 );
 
 -- Table 10: News
-CREATE TABLE IF NOT EXISTS News (
+CREATE TABLE IF NOT EXISTS news (
     news_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
     content TEXT,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS News (
 );
 
 -- Table 13: CarouselItem
-CREATE TABLE IF NOT EXISTS CarouselItem (
+CREATE TABLE IF NOT EXISTS carousel_item (
     id INT PRIMARY KEY AUTO_INCREMENT,
     image_url VARCHAR(255) NOT NULL,
     link VARCHAR(255),
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS CarouselItem (
 );
 
 -- Table 15: Buildings
-CREATE TABLE IF NOT EXISTS Buildings (
+CREATE TABLE IF NOT EXISTS buildings (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     latitude DECIMAL(9,6) NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS Buildings (
 
 
 -- Table 17: Alumnae
-CREATE TABLE IF NOT EXISTS Alumnae (
+CREATE TABLE IF NOT EXISTS alumnae (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS Alumnae (
 );
 
 -- Table 2: Resources
-CREATE TABLE IF NOT EXISTS Resources (
+CREATE TABLE IF NOT EXISTS resources (
     Resource_id INT PRIMARY KEY AUTO_INCREMENT,
     Contributor_id INT NOT NULL,
     Domain_id INT NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS Resources (
 );
 
 -- Table 6: Opportunities
-CREATE TABLE IF NOT EXISTS Opportunities (
+CREATE TABLE IF NOT EXISTS opportunities (
     opp_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
     description TEXT,
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS Opportunities (
 );
 
 -- Table 8: Collaborations
-CREATE TABLE IF NOT EXISTS Collaborations (
+CREATE TABLE IF NOT EXISTS collaborations (
     collaboration_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
     description TEXT,
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS Collaborations (
 );
 
 -- Table 9: Collaborators
-CREATE TABLE IF NOT EXISTS Collaborators (
+CREATE TABLE IF NOT EXISTS collaborators (
     collaborator_id INT PRIMARY KEY AUTO_INCREMENT,
     collaboration_id INT NOT NULL,
     student_name VARCHAR(100) NOT NULL,
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS Collaborators (
 
 
 -- Table 11: NewsRequests
-CREATE TABLE IF NOT EXISTS NewsRequests (
+CREATE TABLE IF NOT EXISTS news_requests (
     request_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
     content TEXT,
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS NewsRequests (
 );
 
 -- Table 12: DomainRequests
-CREATE TABLE IF NOT EXISTS DomainRequests (
+CREATE TABLE IF NOT EXISTS domain_requests (
     request_id INT PRIMARY KEY AUTO_INCREMENT,
     domain_name VARCHAR(100) NOT NULL,
     requested_by INT NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS DomainRequests (
 
 
 -- Table 14: Events
-CREATE TABLE IF NOT EXISTS Events (
+CREATE TABLE IF NOT EXISTS events (
     id INT PRIMARY KEY AUTO_INCREMENT,
     event_name VARCHAR(100) NOT NULL,
     building_id INT,
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS Events (
 
 
 -- Table 16: Activity_log
-CREATE TABLE IF NOT EXISTS Activity_log (
+CREATE TABLE IF NOT EXISTS activity_log (
     log_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     action_table ENUM('news', 'opportunities', 'collaborations', 'others'),
