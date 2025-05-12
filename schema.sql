@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS Alumnae (
     branch VARCHAR(100),
     role VARCHAR(20),
     passing_date DATE,
-    Deactivated_on DATETIME DEFAULT CURRENT_TIMESTAMP
+    Deactivated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
