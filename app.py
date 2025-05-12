@@ -472,7 +472,7 @@ def signin():
         cursor.close()
         conn.close()
 
-@app.route('/resources', methods=['GET'])
+@app.route('/resource', methods=['GET'])
 def resources():
     return render_template('resources.html')  # or jsonify() if returning JSON
 
