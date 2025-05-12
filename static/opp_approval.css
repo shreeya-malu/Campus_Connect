@@ -1,0 +1,117 @@
+/* General container styling */
+.admin-container {
+  max-width: 100%;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+/* Table styling */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  background-color: #fffdf5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  table-layout: fixed;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+  word-wrap: break-word;
+}
+
+.admin-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  color: #333;
+}
+
+.admin-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.admin-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Link styling */
+.admin-table a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.admin-table a:hover {
+  text-decoration: underline;
+}
+
+/* Button styling */
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 5px;
+  transition: background-color 0.3s;
+}
+
+.btn.approve {
+  background-color: #4CAF50; /* Green */
+  color: white;
+}
+
+.btn.approve:hover {
+  background-color: #45a049;
+}
+
+.btn.reject {
+  background-color: #f44336; /* Red */
+  color: white;
+}
+
+.btn.reject:hover {
+  background-color: #d32f2f;
+}
+
+/* Debug section styling */
+details {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+}
+
+details pre {
+  background-color: #f8f8f8;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+/* Headings and paragraphs */
+h2 {
+  color: #333;
+  margin-top: 20px;
+}
+
+p {
+  color: #555;
+}
+
+/* HR styling */
+hr {
+  border: 0;
+  border-top: 1px solid #ddd;
+  margin: 20px 0;
+}
