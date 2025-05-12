@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Opportunity Requests</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='opp_approval.css') }}">
+</head>
+<body>
+  {% include 'navbar.html' %}
+
+  <div class="admin-container">
+ 
+    <h2>Pending Opportunity Requests</h2>
+    {% if requests %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Description (Link)</th>
+            <th>Type</th>
+            <th>Requested By</th>
+            <th>Submitted At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for request in requests %}
+            <tr>
+              <td>{{ request.title }}</td>
+              <td><a href="{{ request.description }}" target="_blank">{{ request.description }}</a></td>
+              <td>{{ request.opportunity_type }}</td>
+              <td>{{ request.requester_name | default('Unknown User') }}</td>
+              <td>{{ request.submitted_at }}</td>
+              <td>
+<!-- In your admin/opportunities.html template -->
+<form method="POST" action="{{ url_for('handle_opportunity_request', request_id=request.request_id) }}">
+    <input type="hidden" name="action" value="approve">
+    <button type="submit" class="btn approve">Approve</button>
+</form>
+
+<form method="POST" action="{{ url_for('handle_opportunity_request', request_id=request.request_id) }}">
+    <input type="hidden" name="action" value="reject">
+    <button type="submit" class="btn reject">Reject</button>
+</form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No pending opportunity requests.</p>
+    {% endif %}
+
+    <hr>
+
+    <h2>Approved Opportunities</h2>
+    {% if approved_opportunities %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Link</th>
+            <th>Type</th>
+            <th>Posted By</th>
+           
+          </tr>
+        </thead>
+        <tbody>
+          {% for opp in approved_opportunities %}
+            <tr>
+              <td>{{ opp.title }}</td>
+              <td><a href="{{ opp.link }}" target="_blank">{{ opp.link }}</a></td>
+              <td>{{ opp.type_name }}</td>
+              <td>{{ opp.poster_name }}</td>
+            
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No approved opportunities.</p>
+    {% endif %}
+  </div>
+
+  
+</body>
+</html>
