@@ -67,9 +67,9 @@ def home():
     # Fetch the 5 most recent resources
     cursor.execute("""
         SELECT r.Resource_id, rt.ResourceType_name AS type, r.Link, c.Name AS contributor
-        FROM Resources r
-        JOIN ResourceTypes rt ON r.ResourceType_id = rt.ResourceType_id
-        JOIN Contributors c ON r.Contributor_id = c.Contributor_id
+        FROM resources r
+        JOIN resourcetypes rt ON r.ResourceType_id = rt.ResourceType_id
+        JOIN contributors c ON r.Contributor_id = c.Contributor_id
         LIMIT 5
     """)
     resources = cursor.fetchall()
@@ -369,12 +369,12 @@ def signup():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        cursor.execute("SELECT email FROM Users WHERE email = %s", (email,))
+        cursor.execute("SELECT email FROM users WHERE email = %s", (email,))
         if cursor.fetchone():
             return jsonify({'error': 'Email already registered'}), 409
             
         cursor.execute(
-            "INSERT INTO Users (username, email, password, passing_date, branch, role) VALUES (%s, %s, %s, %s, %s, %s)",
+            "INSERT INTO users (username, email, password, passing_date, branch, role) VALUES (%s, %s, %s, %s, %s, %s)",
             (name, email, password, passing_date, branch, role)
         )
         conn.commit()
@@ -409,7 +409,7 @@ def signin():
             return jsonify({'message': 'Welcome guest!', 'is_guest': True}), 200
 
         # Check current users first
-        cursor.execute("SELECT * FROM Users WHERE email = %s AND password = %s", (email, password))
+        cursor.execute("SELECT * FROM users WHERE email = %s AND password = %s", (email, password))
         user = cursor.fetchone()
 
         if user:
@@ -422,14 +422,14 @@ def signin():
                 if user_passing_date <= date.today():
                 # Move to Alumnae table
                     cursor.execute("""  
-                        INSERT INTO Alumnae 
+                        INSERT INTO alumnae 
                         (id, name, email, password, passing_date, branch, role)
                         VALUES (%s, %s, %s, %s, %s, %s, %s)
                     """, (
                         user['user_id'], user['username'], user['email'], user['password'],
                         user['passing_date'], user['branch'], user['role']
                     ))
-                    cursor.execute("DELETE FROM Users WHERE id = %s", (user['user_id'],))
+                    cursor.execute("DELETE FROM users WHERE id = %s", (user['user_id'],))
                     conn.commit()
                 
                     session['user_id'] = user['user_id']
@@ -459,7 +459,7 @@ def signin():
             }), 200
 
         # Check if user is in Alumnae table
-        cursor.execute("SELECT * FROM Alumnae WHERE email = %s AND password = %s", (email, password))
+        cursor.execute("SELECT * FROM alumnae WHERE email = %s AND password = %s", (email, password))
         alum = cursor.fetchone()
         
         if alum:
@@ -508,10 +508,10 @@ def search_resource():
 
         cursor.execute("""
             SELECT rt.ResourceType_name AS ResourceType, r.Link
-            FROM Resources r
-            JOIN Contributors c ON r.Contributor_id = c.Contributor_id
-            JOIN Domains d ON r.Domain_id = d.Domain_id
-            JOIN ResourceTypes rt ON r.ResourceType_id = rt.ResourceType_id
+            FROM resources r
+            JOIN contributors c ON r.Contributor_id = c.Contributor_id
+            JOIN domains d ON r.Domain_id = d.Domain_id
+            JOIN resourcetypes rt ON r.ResourceType_id = rt.ResourceType_id
             WHERE c.Year = %s AND d.Domain_name = %s
         """, (year, domain))
 
@@ -559,7 +559,7 @@ def add_resource():
         # Verify domain is approved
         cursor.execute("""
             SELECT d.Domain_id 
-            FROM Domains d
+            FROM domains d
             LEFT JOIN domain_requests dr ON d.Domain_name = dr.domain_name
             WHERE d.Domain_name = %s AND (dr.status IS NULL OR dr.status = 'approved')
         """, (domain,))
@@ -572,21 +572,21 @@ def add_resource():
             }), 400
 
         # Handle contributor
-        cursor.execute("SELECT Contributor_id FROM Contributors WHERE Name=%s AND Year=%s", (name, year))
+        cursor.execute("SELECT Contributor_id FROM contributors WHERE Name=%s AND Year=%s", (name, year))
         contributor = cursor.fetchone()
         if contributor:
             contributor_id = contributor[0]
         else:
-            cursor.execute("INSERT INTO Contributors (Name, Year) VALUES (%s, %s)", (name, year))
+            cursor.execute("INSERT INTO contributors (Name, Year) VALUES (%s, %s)", (name, year))
             contributor_id = cursor.lastrowid
 
         # Handle domain
-        cursor.execute("SELECT Domain_id FROM Domains WHERE Domain_name=%s", (domain,))
+        cursor.execute("SELECT Domain_id FROM domains WHERE Domain_name=%s", (domain,))
         domain_result = cursor.fetchone()
         if domain_result:
             domain_id = domain_result[0]
         else:
-            cursor.execute("INSERT INTO Domains (Domain_name) VALUES (%s)", (domain,))
+            cursor.execute("INSERT INTO domains (Domain_name) VALUES (%s)", (domain,))
             domain_id = cursor.lastrowid
 
         # Process each resource
@@ -597,17 +597,17 @@ def add_resource():
                 continue
 
             # Handle resource type
-            cursor.execute("SELECT ResourceType_id FROM ResourceTypes WHERE ResourceType_name=%s", (r_type,))
+            cursor.execute("SELECT ResourceType_id FROM resourcetypes WHERE ResourceType_name=%s", (r_type,))
             type_result = cursor.fetchone()
             if type_result:
                 type_id = type_result[0]
             else:
-                cursor.execute("INSERT INTO ResourceTypes (ResourceType_name) VALUES (%s)", (r_type,))
+                cursor.execute("INSERT INTO resourcetypes (ResourceType_name) VALUES (%s)", (r_type,))
                 type_id = cursor.lastrowid
 
             # Insert resource
             cursor.execute(
-                "INSERT INTO Resources (Contributor_id, Domain_id, ResourceType_id, Link) VALUES (%s, %s, %s, %s)",
+                "INSERT INTO resources (Contributor_id, Domain_id, ResourceType_id, Link) VALUES (%s, %s, %s, %s)",
                 (contributor_id, domain_id, type_id, r_link)
             )
             resource_id = cursor.lastrowid
@@ -658,7 +658,7 @@ def get_domains():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT Domain_name FROM Domains")
+        cursor.execute("SELECT Domain_name FROM domains")
         domains = [row[0] for row in cursor.fetchall()]
         return jsonify(domains)
     except Exception as e:
@@ -687,7 +687,7 @@ def add_domain():
 
         if user_role == 'admin':
             # Admin directly adds domain
-            cursor.execute("INSERT INTO Domains (Domain_name) VALUES (%s)", (domain,))
+            cursor.execute("INSERT INTO domains (Domain_name) VALUES (%s)", (domain,))
             domain_id = cursor.lastrowid
 
             # Log the creation activity
@@ -755,19 +755,19 @@ def handle_domain_request(request_id):
         if action == 'approve':
             # Add to domains table if not exists
             cursor.execute("""
-                INSERT INTO Domains (Domain_name)
+                INSERT INTO domains (Domain_name)
                 SELECT %s FROM DUAL
                 WHERE NOT EXISTS (
-                    SELECT 1 FROM Domains WHERE Domain_name = %s
+                    SELECT 1 FROM domains WHERE Domain_name = %s
                 )
             """, (domain_name, domain_name))
             
             # Update any resources waiting for this domain
             cursor.execute("""
-                UPDATE Resources r
-                JOIN Domains d ON r.Domain_id = d.Domain_id
+                UPDATE resources r
+                JOIN domains d ON r.Domain_id = d.Domain_id
                 SET r.Domain_id = (
-                    SELECT Domain_id FROM Domains WHERE Domain_name = %s LIMIT 1
+                    SELECT Domain_id FROM domains WHERE Domain_name = %s LIMIT 1
                 )
                 WHERE d.Domain_name = %s
             """, (domain_name, domain_name))
@@ -784,8 +784,8 @@ def handle_domain_request(request_id):
             cursor.execute("UPDATE domain_requests SET status = 'rejected' WHERE request_id = %s", (request_id,))
             
             cursor.execute("""
-                DELETE r FROM Resources r
-                JOIN Domains d ON r.Domain_id = d.Domain_id
+                DELETE r FROM resources r
+                JOIN domains d ON r.Domain_id = d.Domain_id
                 WHERE d.Domain_name = %s
             """, (domain_name,))
 
@@ -822,8 +822,8 @@ def cleanup_pending_domains():
         
         # Delete resources associated with rejected domains
         cursor.execute("""
-            DELETE r FROM Resources r
-            JOIN Domains d ON r.Domain_id = d.Domain_id
+            DELETE r FROM resources r
+            JOIN domains d ON r.Domain_id = d.Domain_id
             JOIN domain_requests dr ON d.Domain_name = dr.domain_name
             WHERE dr.status = 'rejected'
         """)
@@ -867,7 +867,7 @@ def request_status():
             cursor.execute("""
                 SELECT dr.*, u.username as requester_name 
                 FROM domain_requests dr
-                JOIN Users u ON dr.requested_by = u.user_id
+                JOIN users u ON dr.requested_by = u.user_id
                 WHERE dr.status = 'pending'
                 ORDER BY request_date DESC
             """)
@@ -902,7 +902,7 @@ def admin_requests():
     cursor.execute("""
         SELECT dr.*, u.username as requester_name 
         FROM domain_requests dr
-        JOIN Users u ON dr.requested_by = u.user_id
+        JOIN users u ON dr.requested_by = u.user_id
         WHERE dr.status = 'pending'
         ORDER BY dr.request_date DESC
     """)
