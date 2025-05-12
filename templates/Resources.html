@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resources | CampusConnect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Resources.css') }}"/>
+  </head>
+  <body>
+    {% include 'navbar.html' %}
+    <div class="container">
+      <h1>Need help?? Don't worry we got you!</h1>
+
+      <div class="dialog-box">
+        <p>Do you want to...</p>
+        <button onclick="showContribute()">Contribute a Resource</button>
+        <button onclick="showSearch()">Look for a Resource</button>
+      </div>
+
+      <!-- Contribution Form -->
+
+      <div id="contribute-form" class="form-section" style="display: none">
+        <h2>Contribute a Resource</h2>
+        <form id="contribute-form-element" action="#" method="POST">
+          <label>Name:</label>
+          <input type="text" name="name" required />
+
+          <br /><label>Year of Study:</label>
+          <select name="year" required>
+            <option value="">--Select Year--</option>
+            <option value="First Year">First Year</option>
+            <option value="Second Year">Second Year</option>
+            <option value="Third Year">Third Year</option>
+            <option value="Final Year">Final Year</option>
+          </select>
+
+          <br /><label>Domain:</label>
+          <div class="domain-select-container">
+            <select id="contributeDomain" name="domain" required>
+              <option value="">--Select Domain--</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+            <input
+              type="text"
+              id="newDomainInput"
+              placeholder="Add new domain"
+              style="display: none"
+            />
+            <button type="button" id="toggleDomainBtn">+</button>
+          </div>
+
+          <h3>Select Resource Type:</h3>
+          <div class="resource-grid">
+            <div class="resource-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img
+                    src="{{ url_for('static', filename='images/previous_papers.jpg') }}"
+                    alt="Previous Year Papers"
+                  />
+                  <p>Previous Year Papers</p>
+                </div>
+                <div class="card-back">
+                  <label>Link for Previous Year Papers:</label>
+                  <input type="url" placeholder="Paste link here" />
+                </div>
+              </div>
+            </div>
+            <div class="resource-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img
+                    src="{{ url_for('static', filename='images/reference_books.jpg')}}"
+                    alt="Reference Books"
+                  />
+                  <p>Reference Books</p>
+                </div>
+                <div class="card-back">
+                  <label>Link for Reference Books:</label>
+                  <input type="url" placeholder="Paste link here" />
+                </div>
+              </div>
+            </div>
+            <div class="resource-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img
+                    src="{{ url_for('static', filename='images/research_paper.jpg')}}"
+                    alt="Research Papers"
+                  />
+                  <p>Research Papers</p>
+                </div>
+                <div class="card-back">
+                  <label>Link for Research Papers:</label>
+                  <input type="url" placeholder="Paste link here" />
+                </div>
+              </div>
+            </div>
+            <div class="resource-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img
+                    src="{{ url_for('static', filename='images/youtube_links.png')}}"
+                    alt="Youtube Videos"
+                  />
+                  <p>Youtube Videos</p>
+                </div>
+                <div class="card-back">
+                  <label>Link for Youtube Videos:</label>
+                  <input type="url" placeholder="Paste link here" />
+                </div>
+              </div>
+            </div>
+            <div class="resource-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img
+                    src="{{ url_for('static', filename='images/study_notes.jpg')}}"
+                    alt="Study Notes"
+                  />
+                  <p>Study Notes</p>
+                </div>
+                <div class="card-back">
+                  <label>Link for Study Notes:</label>
+                  <input type="url" placeholder="Paste link here" />
+                </div>
+              </div>
+            </div>
+            <div class="resource-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img
+                    src="{{ url_for('static', filename='images/related_projects.jpg')}}"
+                    alt="related projects"
+                  />
+                  <p>Related Projects</p>
+                </div>
+                <div class="card-back">
+                  <label>Link for Related projects:</label>
+                  <input type="url" placeholder="Paste link here" />
+                </div>
+              </div>
+            </div>
+            <div class="resource-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img
+                    src="{{ url_for('static', filename='images/internships.jpg')}}"
+                    alt="Internships"
+                  />
+                  <p>Internships/Job Specific</p>
+                </div>
+                <div class="card-back">
+                  <label>Link for Internships/Job specific:</label>
+                  <input type="url" placeholder="Paste link here" />
+                </div>
+              </div>
+            </div>
+            <div class="resource-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img
+                    src="{{ url_for('static', filename='images/quizzes.jpg')}}"
+                    alt="Quiz"
+                  />
+                  <p>Quizzes</p>
+                </div>
+                <div class="card-back">
+                  <label>Link for Quizes:</label>
+                  <input type="url" placeholder="Paste link here" />
+                </div>
+              </div>
+            </div>
+            <div class="resource-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <img
+                    src="{{ url_for('static', filename='images/moocs.jpg')}}"
+                    alt="MOOCs"
+                  />
+                  <p>MOOCs Platforms</p>
+                </div>
+                <div class="card-back">
+                  <label>Link for MOOCs Courses:</label>
+                  <input type="url" placeholder="Paste link here" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="button-container">
+            <button type="submit">Add!</button>
+          </div>
+        </form>
+      </div>
+
+      <!--Search form-->
+      <div id="search-form" class="form-section" style="display: none">
+        <h2>Search for a Resource</h2>
+        <form
+          id="searchResourcesForm"
+          onsubmit="event.preventDefault(); fetchResources();"
+        >
+          <label for="year">Year of Study:</label>
+          <select id="searchYear" required>
+            <option value="">--Select Year--</option>
+            <option value="First Year">First Year</option>
+            <option value="Second Year">Second Year</option>
+            <option value="Third Year">Third Year</option>
+            <option value="Final Year">Final Year</option>
+          </select>
+
+          <label>Domain:</label>
+          <div class="domain-select-container">
+            <select id="searchDomain" name="domain" required>
+              <option value="">--Select Domain--</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+            <input
+              type="text"
+              id="newDomainInput"
+              placeholder="Add new domain"
+              style="display: none"
+            />
+            <button type="button" id="toggleDomainBtn">+</button>
+          </div>
+
+          <div class="button-container">
+            <button type="submit">Search!</button>
+          </div>
+        </form>
+
+        <div
+          id="results-grid"
+          class="resource-grid"
+          style="margin-top: 20px"
+        ></div>
+      </div>
+    </div>
+    <div class="footer">
+        <div class="footer-container">
+      
+          <div class="footer-column">
+            <h3>About Campus Connect</h3>
+            <p>Campus Connect is a unified platform that connects students, faculty, and administrators. It streamlines communication, resource sharing, and academic management to create a more connected and efficient campus experience.</p>
+          </div>
+      
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+            <p><a href="/home">Home</a></p>
+            <p><a href="/events">Events</a></p>
+            <p><a href="/news">News</a></p>
+            <p><a href="/resources">Resources</a></p>
+            <p><a href="/contact">Contact Us</a></p>
+            <p><a href="/about">About Us</a></p>
+          </div>
+      
+          <div class="footer-column">
+            <h3>Contact</h3>
+            <p>Email: support@campusconnect.com</p>
+            <p>Phone: +91 98765 43210</p>
+            <p>Location: Pune, Maharashtra, India</p>
+            <div class="footer-socials">
+              <a href="#" title="Instagram"><i class="fa fa-instagram"></i></a>
+              <a href="#" title="LinkedIn"><i class="fa fa-linkedin"></i></a>
+              <a href="#" title="Twitter"><i class="fa fa-twitter"></i></a>
+              <a href="#" title="GitHub"><i class="fa fa-github"></i></a>
+            </div>
+          </div>
+      
+        </div>
+      
+        <div class="footer-bottom">
+          © 2025 Campus Connect. All rights reserved.
+        </div>
+      </div>
+    <script src="{{ url_for('static', filename='Resources.js') }}"></script>
+  </body>
+          
+</html>
