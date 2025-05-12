@@ -52,7 +52,7 @@ initialize_database()  # Only for setup; remove in production
 
 @app.route('/')
 def index():
-    return redirect(url_for('home'))
+    return render_template('index.html')
 
 
 @app.route('/home')
