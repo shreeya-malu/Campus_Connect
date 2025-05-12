@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo&display=swap" rel="stylesheet">
@@ -16,26 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="navbar_w">
-       <div id="logo">
-            <img src="../static/Assets/logo squarish.png">
-        </div>
-        <div id="navbar">
-            <ul>
-                <li><a href="/home">Home</a></li>
-                <li><a href="/opportunities">Opportunities</a></li>
-                <li><a href="/resources">Resources</a></li>
-                <li><a href="/news">News</a></li>
-                <li><a href="/contact">Contact Us</a></li>
-                <li><a href="/about">About Us</a></li>
-                <li><a href="{{ url_for('view_news_requests') }}" class="admin-button">Admin</a></li> 
-                                 
-            </ul>  
-        </div> 
-        <div id="auth-buttons">
-            <button id="login-btn">Login/Sign up</button>
-          </div>
-    </div>
+    {% include 'navbar.html' %}
     <div id="hero-section">
         <div id="Heading">
             <h1>Your One-Stop <br> <span style="color: #fb8500ff;">Campus</span> <br><span style="color: #ffb703ff;">Companion.</span></h1>
@@ -125,7 +104,7 @@
           <div id="notice-heading"><h2>NOTICE BOARD</h2></div>
     
           <div class="filter-buttons">
-            <button class="active" onclick="filterNews('all', this)">All</button>
+            <button class="active" onclick="News('all', this)">All</button>
             <button onclick="filterNews('fy', this)">FY</button>
             <button onclick="filterNews('sy', this)">SY</button>
             <button onclick="filterNews('ty', this)">TY</button>
@@ -212,6 +191,8 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="{{ url_for('static', filename='map.js') }}"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='news2.js') }}"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </body>
 </html>
+s
