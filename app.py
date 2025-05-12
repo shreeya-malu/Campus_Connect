@@ -10,11 +10,11 @@ app.secret_key = '1234'
 
 # Database Configuration
 db_config = {
-   host="sql12.freesqldatabase.com",  # Your host
-    user="sql12778375",              # Your username
-    password="CRy2nFRDLD",          # Your password
-    database="sql12778375",            # Your database name
-    port=3306 
+   host=os.getenv("DB_HOST"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    database=os.getenv("DB_NAME"),
+    port=int(os.getenv("DB_PORT", 3306)
 }
 
 def get_db_connection():
@@ -28,7 +28,8 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return redirect(url_for('home'))
+    return render_template("index.html")
+
 
 @app.route('/home')
 def home():
