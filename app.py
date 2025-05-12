@@ -26,6 +26,28 @@ def get_db_connection():
         print(f"Error connecting to MySQL: {err}")
         return None
 
+def initialize_database():
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            with open('schema.sql', 'r') as f:
+                sql_script = f.read()
+            
+            # Execute each statement separately
+            for statement in sql_script.strip().split(';'):
+                if statement.strip():
+                    cursor.execute(statement + ';')
+            conn.commit()
+            print("Database initialized successfully.")
+        except mysql.connector.Error as err:
+            print(f"Error executing SQL script: {err}")
+        finally:
+            cursor.close()
+            conn.close()
+    else:
+        print("Could not establish database connection.")
+
 
 @app.route('/')
 def index():
@@ -1110,6 +1132,8 @@ def opportunities():
                          collaborations=[],
                          search_query=search_query,
                          opportunity_types=[])  # Pass empty list if DB fails
-
+   
 if __name__ == '__main__':
+    initialize_database()  # Only for setup; remove in production
     app.run(debug=True)
+
