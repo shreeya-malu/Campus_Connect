@@ -474,7 +474,7 @@ def signin():
 
 @app.route('/resource', methods=['GET'])
 def resources():
-    return render_template('resources.html')  # or jsonify() if returning JSON
+    return render_template('Resources.html')  # or jsonify() if returning JSON
 
 
 @app.route('/search_resource', methods=['POST'])
