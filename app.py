@@ -1232,7 +1232,7 @@ def opportunities():
         SELECT o.*, u.username as poster_name, ot.type_name
         FROM opportunities o
         JOIN users u ON o.posted_by = u.user_id
-        LEFT JOIN opportunitytypes ot ON o.type_id = ot.type_id
+        LEFT JOIN opportunitytypes ot ON o.opp_id = ot.type_id
         WHERE o.title LIKE %s OR ot.type_name LIKE %s
         ORDER BY o.opp_id DESC
         """, (f'%{search_query}%', f'%{search_query}%'))
