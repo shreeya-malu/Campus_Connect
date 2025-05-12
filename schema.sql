@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS activity_log (
 
 -- Table 17 opportunity - admin approval Table
 
-CREATE TABLE opportunity_requests (
+CREATE TABLE opportunity_requests IF NOT EXISTS (
     request_id INT(11) NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
@@ -190,4 +190,4 @@ CREATE TABLE opportunity_requests (
 );
 
 
-
+INSERT INTO buildings IF NOT EXISTS (name, latitude, longitude) VALUES ('IT Department', 18.48597, 73.81602), ('Main Building', 18.48639, 73.81589), ('Instru Building', 18.48646, 73.81649), ('Suswaad Canteen', 18.48620, 73.81671),('Mechanical Building', 18.48552, 73.81645);
