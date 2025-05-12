@@ -10,10 +10,11 @@ app.secret_key = '1234'
 
 # Database Configuration
 db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'admin123',
-    'database': 'campus_portal'
+   host="sql12.freesqldatabase.com",  # Your host
+    user="sql12778375",              # Your username
+    password="CRy2nFRDLD",          # Your password
+    database="sql12778375",            # Your database name
+    port=3306 
 }
 
 def get_db_connection():
