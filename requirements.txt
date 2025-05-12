@@ -1,0 +1,4 @@
+flask
+gunicorn
+mysql.connector
+datetime
