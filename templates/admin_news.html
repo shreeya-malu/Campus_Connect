@@ -4,7 +4,36 @@
     <title>Admin News Requests</title>
 </head>
 <body>
+    <!-- Back to homepage button in the top-left corner -->
+    <a href="/" class="back-button">Back to Homepage</a>
+    
     <h1>News Requests Pending Approval</h1>
+
+    <style>
+                
+        /* Back Button Styling */
+        .back-button {
+            position: fixed; /* Fix the position relative to the screen */
+            top: 20px;       /* 20px from the top */
+            right: 20px;      /* 20px from the left */
+            padding: 10px 20px;
+            background-color: #023047; /* Blue button */
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            z-index: 9999;   /* Ensure the button is above other content */
+        }
+
+        /* Hover Effect */
+        .back-button:hover {
+            background-color: #023047;
+            transform: scale(1.05);
+        }
+
+    </style>
 
     <!-- Show the Pending News Requests table only if there are requests -->
     {% if requests %}
