@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, jsonify
-from flask import Flask, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for,session, flash
 
 from datetime import date
+from datetime import datetime
 import mysql.connector
 
 app = Flask(__name__)
@@ -17,7 +17,13 @@ db_config = {
 }
 
 def get_db_connection():
-    return mysql.connector.connect(**db_config)
+    try:
+        conn = mysql.connector.connect(**db_config)
+        return conn
+    except mysql.connector.Error as err:
+        print(f"Error connecting to MySQL: {err}")
+        return None
+
 
 @app.route('/')
 def index():
@@ -47,29 +53,49 @@ def home():
 
     return render_template('index.html', carousel_items=carousel_items, resources=resources)
 
+from flask import session  # Add this import if not already
+
 @app.route('/submit', methods=['POST'])
 def submit_news():
     try:
         title = request.form.get('title')
         description = request.form.get('description')
-        category = request.form.get('category')  # Enum value ('fy', 'sy', 'ty', 'btech', 'other','all')
-        requested_by = request.form.get('requested_by')  # Name of the person submitting the request
+        category = request.form.get('category')
+        requested_by = request.form.get('requested_by')
 
-        # Check if title, description, and category are provided
         if not title or not description or not category or not requested_by:
             return jsonify({'error': 'Title, Description, Category, and Requested By are required!'}), 400
+
+        user_id = session.get('user_id')  # Fetch logged-in user's ID
+
+        if not user_id:
+            return jsonify({'error': 'User not authenticated'}), 403
 
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        cursor.execute("INSERT INTO news_requests (title, content, category, requested_by, status) VALUES (%s, %s, %s, %s, 'pending')",(title, description, category, requested_by))
+        # Insert the news request
+        cursor.execute("""
+            INSERT INTO news_requests (title, content, category, requested_by, status)
+            VALUES (%s, %s, %s, %s, 'pending')
+        """, (title, description, category, requested_by))
 
+        news_request_id = cursor.lastrowid
+
+        # Log the activity with actual user ID
+        cursor.execute("""
+            INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+            VALUES (%s, 'request', 'news_requests', %s, %s)
+        """, (user_id, news_request_id, f"News request submitted by user_id={user_id}, name={requested_by}"))
 
         conn.commit()
         cursor.close()
         conn.close()
 
-        return redirect(url_for('home'))  # Redirect to the home page after submitting
+        return redirect(url_for('home'))
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
     except Exception as e:
         return jsonify({'error': f"Something went wrong: {str(e)}"}), 500
@@ -112,6 +138,8 @@ def view_news_requests():
     conn.close()
 
     return render_template('admin_news.html', requests=requests, approved_news=approved_news)
+from flask import session  # Ensure session is imported
+from datetime import datetime
 
 @app.route('/admin/handle_news/<int:request_id>', methods=['POST'])
 def handle_news_request(request_id):
@@ -119,6 +147,10 @@ def handle_news_request(request_id):
 
     if not action:
         return redirect(url_for('admin_news', status='error'))
+
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Admin not authenticated'}), 403
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -128,16 +160,43 @@ def handle_news_request(request_id):
         news = cursor.fetchone()
         if news:
             title, content, category, requested_by = news
-            cursor.execute("INSERT INTO news (title, content, category, created_at) VALUES (%s, %s, %s, %s)", (title, content, category, date.today()))
+            cursor.execute("""
+                INSERT INTO news (title, content, category, created_at)
+                VALUES (%s, %s, %s, %s)
+            """, (title, content, category, date.today()))
+
+            # Get the new news ID
+            news_id = cursor.lastrowid
+
+            # Update the request status
             cursor.execute("UPDATE news_requests SET status = 'accepted' WHERE request_id = %s", (request_id,))
+
+            # Log the activity
+            cursor.execute("""
+                INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                VALUES (%s, 'create', 'news', %s, %s)
+            """, (user_id, news_id, f"News approved from request {request_id}: '{title}' by {requested_by}"))
+
     elif action == 'reject':
-        cursor.execute("UPDATE news_requests SET status = 'rejected' WHERE request_id = %s", (request_id,))
+        cursor.execute("SELECT title, requested_by FROM news_requests WHERE request_id = %s", (request_id,))
+        result = cursor.fetchone()
+        if result:
+            title, requested_by = result
+            cursor.execute("UPDATE news_requests SET status = 'rejected' WHERE request_id = %s", (request_id,))
+
+            # Log the activity as an 'update'
+            cursor.execute("""
+                INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                VALUES (%s, 'update', 'news_requests', %s, %s)
+            """, (user_id, request_id, f"News request rejected: '{title}' by {requested_by}"))
+
     else:
         conn.close()
         return redirect(url_for('admin_news', status='error'))
 
     conn.commit()
     conn.close()
+
     return redirect(url_for('admin_news', status='accepted' if action == 'approve' else 'rejected'))
 
 @app.route('/admin/news')
@@ -185,113 +244,72 @@ def get_events():
 
     return jsonify(list(buildings.values()))
 
-@app.route('/resources')
-def resources():
-    return render_template('resources.html')
+@app.route('/add-event', methods=['GET', 'POST'])
+def add_event():
+    db = get_db_connection()
+    cursor = db.cursor()
 
-@app.route('/add_resource', methods=['POST'])
-def add_resource():
-    try:
-        data = request.get_json()
-        name = data.get('name')
-        year = data.get('year')
-        domain = data.get('domain')
-        resources = data.get('resources', [])
+    if request.method == 'POST':
+        event_name = request.form['event_name']
+        building_id = request.form.get('building_id') or None
 
-        if not name or not year or not domain or not resources:
-            return jsonify({'error': 'Missing data in request!'}), 400
+        sql = "INSERT INTO events (event_name, building_id) VALUES (%s, %s)"
+        values = (event_name, building_id if building_id else None)
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        try:
+            cursor.execute(sql, values)
+            db.commit()
 
-        # --- Contributor ---
-        cursor.execute("SELECT Contributor_id FROM Contributors WHERE Name=%s AND Year=%s", (name, year))
-        contributor = cursor.fetchone()
-        if contributor:
-            contributor_id = contributor[0]
-        else:
-            cursor.execute("INSERT INTO Contributors (Name, Year) VALUES (%s, %s)", (name, year))
-            contributor_id = cursor.lastrowid
+            event_id = cursor.lastrowid  # Get the inserted event ID
 
-        # --- Domain ---
-        cursor.execute("SELECT Domain_id FROM Domains WHERE Domain_name=%s", (domain,))
-        domain_result = cursor.fetchone()
-        if domain_result:
-            domain_id = domain_result[0]
-        else:
-            cursor.execute("INSERT INTO Domains (Domain_name) VALUES (%s)", (domain,))
-            domain_id = cursor.lastrowid
-
-        for resource in resources:
-            r_type = resource.get('type')
-            r_link = resource.get('link')
-            if not r_type or not r_link:
-                continue  # skip incomplete entries
-
-            # --- Resource Type ---
-            cursor.execute("SELECT ResourceType_id FROM ResourceTypes WHERE ResourceType_name=%s", (r_type,))
-            type_result = cursor.fetchone()
-            if type_result:
-                type_id = type_result[0]
+            user_id = session.get('user_id')
+            if not user_id:
+                flash("User not authenticated. Event was added but not logged.")
             else:
-                cursor.execute("INSERT INTO ResourceTypes (ResourceType_name) VALUES (%s)", (r_type,))
-                type_id = cursor.lastrowid
+                # Log the activity
+                cursor.execute("""
+                    INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
+                    VALUES (%s, 'create', 'events', %s, %s)
+                """, (
+                    user_id,
+                    event_id,
+                    f"Event '{event_name}' added by user_id={user_id}"
+                ))
+                db.commit()
 
-            # --- Insert Resource ---
-            cursor.execute(
-                "INSERT INTO Resources (Contributor_id, Domain_id, ResourceType_id, Link) VALUES (%s, %s, %s, %s)",
-                (contributor_id, domain_id, type_id, r_link)
-            )
+            flash('Event added successfully!')
 
-        conn.commit()
-        cursor.close()
-        conn.close()
+        except mysql.connector.Error as err:
+            db.rollback()
+            flash(f"Error: {err}")
 
-        return jsonify({'message': 'Resources added successfully!'}), 201
+        return redirect(url_for('add_event'))
 
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    # Fetch buildings for dropdown
+    cursor.execute("SELECT id, name FROM buildings")
+    buildings = cursor.fetchall()
 
+    return render_template('add_event.html', buildings=buildings)
 
-@app.route('/search_resource', methods=['POST'])
-def search_resource():
+@app.route('/activity_log')
+def activity_log():
     try:
-        data = request.get_json()
-        year = data.get('year')
-        domain = data.get('domain')
-
-        if not year or not domain:
-            return jsonify({'error': 'Year and Domain are required!'}), 400
-
-        conn = get_db_connection()
+        conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='admin123',
+        database='campus_portal',
+        )
         cursor = conn.cursor(dictionary=True)
 
-        cursor.execute(
-            '''
-            SELECT rt.ResourceType_name AS type, r.Link
-            FROM Resources r
-            JOIN Contributors c ON r.Contributor_id = c.Contributor_id
-            JOIN Domains d ON r.Domain_id = d.Domain_id
-            JOIN ResourceTypes rt ON r.ResourceType_id = rt.ResourceType_id
-            WHERE c.Year = %s AND d.Domain_name = %s
-            ''',
-            (year, domain)
-        )
+        cursor.execute("SELECT * FROM activity_log ORDER BY timestamp DESC")
 
-        rows = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        if not rows:
-            return jsonify([])
-
-        results = [{'ResourceType': row['type'], 'Link': row['Link']} for row in rows]
-        return jsonify(results), 200
-
+        activity_logs = cursor.fetchall()
+        return render_template('activity_log.html', activity_logs=activity_logs)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-  
+        print(f"Error fetching activity logs: {e}")
+        return render_template('activity_log.html', activity_logs=[])
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html', role=session.get('role'))
