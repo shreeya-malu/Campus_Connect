@@ -321,13 +321,7 @@ def add_event():
 @app.route('/activity_log')
 def activity_log():
     try:
-        conn = mysql.connector.connect(
-        "host":os.getenv("DB_HOST"),
-        "user":os.getenv("DB_USER"),
-        "password":os.getenv("DB_PASSWORD"),
-        "database":os.getenv("DB_NAME"),
-        "port":int(os.getenv("DB_PORT", 3306))
-        )
+        conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute("SELECT * FROM activity_log ORDER BY timestamp DESC")
