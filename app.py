@@ -88,7 +88,7 @@ def submit_news():
         title = request.form.get('title')
         description = request.form.get('description')
         category = request.form.get('category')
-        requested_by = request.form.get('requested_by')
+       
 
         if not title or not description or not category or not requested_by:
             return jsonify({'error': 'Title, Description, Category, and Requested By are required!'}), 400
@@ -104,8 +104,8 @@ def submit_news():
         # Insert the news request
         cursor.execute("""
             INSERT INTO news_requests (title, content, category, requested_by, status)
-            VALUES (%s, %s, %s, %s, 'pending')
-        """, (title, description, category, user_id))
+            VALUES (%s, %s, %s, %s, NOW())
+        """, (title, description, category, user_id,'pending'))
 
         news_request_id = cursor.lastrowid
 
