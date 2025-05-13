@@ -63,28 +63,6 @@ h2 {
 }
 
 /* ===================== */
-/* NAV TABS              */
-/* ===================== */
-.nav-tabs .nav-link {
-  color: var(--prussian-blue);
-  font-weight: 500;
-  border: none;
-  border-bottom: 2px solid transparent;
-  transition: all 0.3s ease;
-}
-
-.nav-tabs .nav-link:hover {
-  color: var(--ut-orange);
-  border-bottom: 2px solid var(--ut-orange);
-}
-
-.nav-tabs .nav-link.active {
-  background-color: transparent;
-  color: var(--blue-green);
-  border-bottom: 2px solid var(--blue-green);
-}
-
-/* ===================== */
 /* CARDS                 */
 /* ===================== */
 .card {
