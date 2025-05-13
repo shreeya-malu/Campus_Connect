@@ -90,7 +90,7 @@ def submit_news():
         category = request.form.get('category')
        
 
-        if not title or not description or not category or not requested_by:
+        if not title or not description or not category:
             return jsonify({'error': 'Title, Description, Category, and Requested By are required!'}), 400
 
         user_id = session.get('user_id')  # Fetch logged-in user's ID
