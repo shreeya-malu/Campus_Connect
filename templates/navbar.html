@@ -58,6 +58,7 @@
              <li><a href="{{ url_for('request_status') }}"><button id="check-request-btn">Check Request Status</button></a></li>
             {% if session.get('role') == 'admin' %}
             <li><a href="{{ url_for('view_news_requests') }}">Manage News Requests</a></li>
+             <li><a href="{{ url_for('admin_opportunities') }}">Manage Opportunity Requests</a></li>
             <li><a href="{{ url_for('activity_log') }}">View Activity Log</a></li>
             <li><a href="{{ url_for('add_event') }}">Add an Event to the Map</a></li>
             {% endif %}
