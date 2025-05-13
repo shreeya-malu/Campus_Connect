@@ -104,8 +104,8 @@ def submit_news():
         # Insert the news request
         cursor.execute("""
             INSERT INTO news_requests (title, content, category, requested_by, status)
-            VALUES (%s, %s, %s, %s, NOW())
-        """, (title, description, category, user_id,'pending'))
+            VALUES (%s, %s, %s, %s,'pending')
+        """, (title, description, category, user_id))
 
         news_request_id = cursor.lastrowid
 
