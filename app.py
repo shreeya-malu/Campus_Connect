@@ -94,6 +94,7 @@ def submit_news():
             return jsonify({'error': 'Title, Description, Category, and Requested By are required!'}), 400
 
         user_id = session.get('user_id')  # Fetch logged-in user's ID
+        username = session.get('username')
 
         if not user_id:
             return jsonify({'error': 'User not authenticated'}), 403
@@ -113,7 +114,7 @@ def submit_news():
         cursor.execute("""
             INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
             VALUES (%s, 'request', 'news_requests', %s, %s)
-        """, (user_id, news_request_id, f"News request submitted by user_id={user_id}, name={requested_by}"))
+        """, (user_id, news_request_id, f"News request submitted by user_id={user_id}, name={user_name}"))
 
         conn.commit()
         cursor.close()
