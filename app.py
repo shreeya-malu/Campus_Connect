@@ -114,7 +114,7 @@ def submit_news():
         cursor.execute("""
             INSERT INTO activity_log (user_id, action_type, target_table, target_id, details)
             VALUES (%s, 'request', 'news_requests', %s, %s)
-        """, (user_id, news_request_id, f"News request submitted by user_id={user_id}, name={user_name}"))
+        """, (user_id, news_request_id, f"News request submitted by user_id={user_id}"))
 
         conn.commit()
         cursor.close()
