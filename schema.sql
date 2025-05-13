@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS domain_requests (
     domain_name VARCHAR(100) NOT NULL,
     requested_by INT NOT NULL,
     request_date TIMESTAMP NOT NULL,
-    status ENUM('pending', 'approved', 'rejected'),
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending' ,
     FOREIGN KEY (requested_by) REFERENCES users(user_id)
 );
 
