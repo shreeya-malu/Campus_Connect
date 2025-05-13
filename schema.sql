@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE TABLE IF NOT EXISTS activity_log (
     log_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
-    action_table ENUM('news', 'opportunities', 'collaborations', 'others'),
+    action_type ENUM('news', 'opportunities', 'collaborations', 'others'),
     target_table VARCHAR(100) NOT NULL,
     target_id INT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
