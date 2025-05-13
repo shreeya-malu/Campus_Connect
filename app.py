@@ -1043,8 +1043,8 @@ def handle_opportunity_request(request_id):
 @app.route('/admin/opportunities')
 def admin_opportunities():
     print("Entering /admin/opportunities route")
-    if not session.get('id') or session.get('role') != 'admin':
-        print("Unauthorized: id=%s, role=%s" % (session.get('id'), session.get('role')))
+    if not session.get('user_id') or session.get('role') != 'admin':
+        print("Unauthorized: user_id=%s, role=%s" % (session.get('user_id'), session.get('role')))
         flash('Unauthorized access', 'danger')
         return redirect(url_for('home'))
 
@@ -1074,6 +1074,7 @@ def admin_opportunities():
             ORDER BY o.opp_id DESC
             LIMIT 20
         """)
+       
         approved_opportunities = cursor.fetchall()
         print("Approved Opportunities:", approved_opportunities)
 
