@@ -21,7 +21,25 @@ async function checkSession() {
     return { logged_in: false };
   }
 }
+/*
+function initializeRequestHandlers() {
+  // Request approval handlers
+  document
+    .querySelector(".request-list")
+    ?.addEventListener("click", function (e) {
+      const btn = e.target.closest(".approve-btn, .reject-btn");
+      if (!btn) return;
 
+      const requestItem = btn.closest(".request-item");
+      const requestId = requestItem.dataset.requestId || requestItem.dataset.id;
+      const action =
+        btn.dataset.action ||
+        (btn.classList.contains("approve-btn") ? "approve" : "reject");
+
+      handleRequestAction(btn, action, requestId);
+    });
+}
+    */
 
 function showAdminPanel(requests) {
   const adminPanel = document.createElement("div");
@@ -51,10 +69,43 @@ function showAdminPanel(requests) {
   // Add to profile details
   const profileDetails = document.querySelector(".profile-details");
   profileDetails.appendChild(adminPanel);
-
+/*
+  // Add event listeners for buttons
+  adminPanel.querySelectorAll(".approve-btn").forEach((btn) => {
+    btn.addEventListener("click", handleRequestAction);
+  });
+  adminPanel.querySelectorAll(".reject-btn").forEach((btn) => {
+    btn.addEventListener("click", handleRequestAction);
+  });
+  */
 }
+/*
+async function handleRequestAction(e) {
+  const requestItem = e.target.closest(".request-item");
+  const requestId = requestItem.dataset.id;
+  const action = e.target.classList.contains("approve-btn")
+    ? "approve"
+    : "reject";
 
+  try {
+    const response = await fetch(`/admin/handle_domain/${requestId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `action=${action}`,
+    });
 
+    if (response.ok) {
+      requestItem.remove();
+      // Refresh domains list
+      await fetchDomains();
+    }
+  } catch (error) {
+    console.error("Error handling request:", error);
+  }
+}*/
+// new function ends !
 
 function showNotification(message, isError = false) {
   // Create notification element if it doesn't exist
@@ -126,7 +177,7 @@ function setupRequestHandlers() {
 }
 
 //  handleRequestAction function to use the dialog
-/*async function handleRequestAction(button, action, requestId) {
+async function handleRequestAction(button, action, requestId) {
   try {
     button.disabled = true;
     const response = await fetch(`/admin/handle_domain/${requestId}`, {
@@ -153,7 +204,7 @@ function setupRequestHandlers() {
     button.disabled = false;
   }
 }
-*/
+
 function populateDomainDropdowns() {
   const searchDomain = document.getElementById("searchDomain");
   const contributeDomain = document.getElementById("contributeDomain");
