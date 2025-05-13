@@ -35,6 +35,17 @@ CREATE TABLE IF NOT EXISTS opportunitytypes (
     type_name VARCHAR(100) NOT NULL
 );
 
+INSERT IGNORE INTO opportunitytypes VALUES
+(1, 'job'),
+(2, 'Internship'),
+(3, 'hackathon'),
+(4, 'Scholarship'),
+(5, 'Upskill Program'),
+(6, 'Fellowship'),
+(7, 'Mentorship Program'),
+(8, 'Conference');
+
+
 -- Table 10: News
 CREATE TABLE IF NOT EXISTS news (
     news_id INT PRIMARY KEY AUTO_INCREMENT,
