@@ -55,7 +55,7 @@
         </div>
 
         <ul class="dashboard-links">
-            <li><button id="check-request-btn">Check Request Status</button></li>
+             <li><a href="{{ url_for('request_status') }}"><button id="check-request-btn">Check Request Status</button></a></li>
             {% if session.get('role') == 'admin' %}
             <li><a href="{{ url_for('view_news_requests') }}">Manage News Requests</a></li>
             <li><a href="{{ url_for('activity_log') }}">View Activity Log</a></li>
