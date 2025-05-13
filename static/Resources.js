@@ -126,7 +126,7 @@ function setupRequestHandlers() {
 }
 
 //  handleRequestAction function to use the dialog
-async function handleRequestAction(button, action, requestId) {
+/*async function handleRequestAction(button, action, requestId) {
   try {
     button.disabled = true;
     const response = await fetch(`/admin/handle_domain/${requestId}`, {
@@ -153,7 +153,7 @@ async function handleRequestAction(button, action, requestId) {
     button.disabled = false;
   }
 }
-
+*/
 function populateDomainDropdowns() {
   const searchDomain = document.getElementById("searchDomain");
   const contributeDomain = document.getElementById("contributeDomain");
