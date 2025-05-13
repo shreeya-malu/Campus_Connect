@@ -79,7 +79,6 @@
             {% for resource in resources %}
             <div class="resource-card">
                 <h3 class="resource-title">{{ resource.type }}</h3>
-                <p class="resource-description">{{ resource.description or 'No description available' }}</p>
                 <a href="{{ resource.Link }}" class="resource-link">
                     <button class="apply-btn">View Resource</button>
                 </a>
