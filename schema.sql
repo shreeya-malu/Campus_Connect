@@ -111,7 +111,6 @@ CREATE TABLE IF NOT EXISTS opportunities (
 CREATE TABLE IF NOT EXISTS collaborations (
     collaboration_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
-    description TEXT,
     collaboration_type VARCHAR(100),
     posted_by INT NOT NULL,
     contact_link VARCHAR(255),
@@ -121,13 +120,10 @@ CREATE TABLE IF NOT EXISTS collaborations (
 
 -- Table 9: Collaborators
 CREATE TABLE IF NOT EXISTS collaborators (
-    collaborator_id INT PRIMARY KEY AUTO_INCREMENT,
-    collaboration_id INT NOT NULL,
-    student_name VARCHAR(100) NOT NULL,
-    student_email VARCHAR(100) NOT NULL,
-    student_linkedin VARCHAR(100),
-    created_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (collaboration_id) REFERENCES collaborations(collaboration_id)
+    Contributor_id INT(11) NOT NULL AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Year VARCHAR(50) NOT NULL,
+    PRIMARY KEY (Contributor_id)
 );
 
 
