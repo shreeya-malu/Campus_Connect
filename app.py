@@ -966,7 +966,7 @@ def handle_opportunity_request(request_id):
         flash('Unauthorized access', 'danger')
         return redirect(url_for('home'))
 
-    admin_id = session.get('id')
+    admin_id = session.get('user_id')
     if not admin_id:
         flash('Admin not authenticated', 'danger')
         return redirect(url_for('home'))
