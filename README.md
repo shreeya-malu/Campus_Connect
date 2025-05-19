@@ -1,5 +1,3 @@
-Here’s a properly formatted and polished version of that section for your `README.md`, so it looks clean and consistent in GitHub Markdown preview:
-
 ---
 
 # 🌐 Campus Connect
