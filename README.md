@@ -1,5 +1,3 @@
----
-
 # 🌐 Campus Connect
 
 **Campus Connect** is a centralized platform that connects students, professors, and administrators by streamlining communication, academic collaboration, and opportunity sharing — all within one unified system.
