@@ -1,10 +1,3 @@
-# Campus Connect
-
-**Campus Connect** is a centralized platform that connects students, professors, and administrators by streamlining communication, academic collaboration, and opportunity sharing — all within one unified system.
-
-> 🔔 **Note:** The live deployment is temporarily available at  
-> 🌍 [https://campus-connect.onrender.com](https://campus-connect-zbf3.onrender.com/home)  
-> *(It may be taken down soon)*
 ---
 # 🎓 Campus Connect
 
@@ -16,8 +9,10 @@
 
 ## 🔗 Live Demo
 
-🚀 [Hosted on Render](https://your-link-here.com)  
 📂 [GitHub Repository](https://github.com/shreeya-malu/Campus_Connect)
+> 🔔 **Note:** The live deployment is temporarily available at  
+> 🌍 [https://campus-connect.onrender.com](https://campus-connect-zbf3.onrender.com/home)  
+> *(It may be taken down soon)*
 
 ---
 
@@ -144,27 +139,9 @@ Then go to: `http://127.0.0.1:5000/`
 
 | Role    | Credentials (Default)                                    | Access                                    |
 | ------- | -------------------------------------------------------- | ----------------------------------------- |
-| Admin   | [admin@example.com](mailto:admin@example.com) / admin    | Full access to approvals, logs, event map |
-| Student | [student@example.com](mailto:student@example.com) / pass | Limited dashboard, news/event view only   |
+| Admin   | [admin@gmail.com] / password: admin@123                  | Full access to approvals, logs, event map |
 
----
-
-## 📦 Folder Structure
-
-```
-Campus_Connect/
-├── static/
-│   ├── css/
-│   └── js/
-├── templates/
-│   ├── index.html
-│   ├── dashboard.html
-│   └── ...
-├── app.py
-├── config.py
-├── requirements.txt
-└── README.md
-```
+Students, Faculty can sign up and browse through the website or use Guest Login.
 
 ---
 
