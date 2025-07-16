@@ -138,7 +138,7 @@ Then go to: `http://127.0.0.1:5000/`
 
 | Role    | Credentials (Default)                                    | Access                                    |
 | ------- | -------------------------------------------------------- | ----------------------------------------- |
-| Admin   | user_id: admin@gmail.com | password: admin@123           | Full access to approvals, logs, event map |
+| Admin   | user_id: admin@gmail.com ; password: admin@123           | Full access to approvals, logs, event map |
 
 Students, Faculty can sign up and browse through the website or use Guest Login.
 
