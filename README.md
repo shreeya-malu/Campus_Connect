@@ -8,7 +8,7 @@
 
 ## 🔗 Live Demo
 
-📂 [GitHub Repository](https://github.com/shreeya-malu/Campus_Connect)
+📂 [Demo Video](#)
 > 🔔 **Note:** The live deployment is temporarily available at  
 > 🌍 [https://campus-connect.onrender.com](https://campus-connect-zbf3.onrender.com/home)  
 > *(It may be taken down soon)*
