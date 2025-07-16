@@ -94,11 +94,11 @@ This transition ensured:
 
 ## 👥 Team Members
 
-| Name                | Role                                                                   |
-| ------------------- | ---------------------------------------------------------------------- |
-| **Shreeya Malu**    | Homepage, News Module, DB Integration, Cloud Migration, Admin Features |
-| **Reema Desle**     | \[Details of her work, optional]                                       |
-| **Ishwari Shekade** | \[Details of her work, optional]                                       |
+| Name                |
+| ------------------- | 
+| **Shreeya Malu**    |
+| **Reema Desle**     |
+| **Ishwari Shekade** |
 
 > 🙌 Special thanks to my team — the project was a true collaboration of skills, creativity, and commitment.
 
