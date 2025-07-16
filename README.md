@@ -67,16 +67,16 @@ Flask was chosen for its:
 ---
 
 ## 🌐 Architecture Diagram
-
-```mermaid
-graph TD;
-  A[User] --> B[Frontend - HTML/CSS/JS]
-  B --> C[Flask Backend]
-  C --> D[MySQL Database (Cloud Hosted)]
-  C --> E[Render (Deployed Platform)]
-````
-
----
+<details> <summary>🗺️ Click to Expand Architecture Diagram (Mermaid)</summary>
+mermaid
+Copy
+Edit
+graph TD
+    A[User] --> B[Frontend - HTML/CSS/JS]
+    B --> C[Backend - Flask]
+    C --> D[MySQL Database (Cloud Hosted)]
+    C --> E[Render - Deployed Web App]
+</details>
 
 ## 🚀 Deployment & Scalability
 
