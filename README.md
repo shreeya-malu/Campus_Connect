@@ -94,13 +94,7 @@ This transition ensured:
 
 ## 👥 Team Members
 
-| Name                |
-| ------------------- | 
-| **Shreeya Malu**    |
-| **Reema Desle**     |
-| **Ishwari Shekade** |
-
-> 🙌 Special thanks to my team — the project was a true collaboration of skills, creativity, and commitment.
+Shreeya Malu, Reema Desle, Ishwari Shekade
 
 ---
 
