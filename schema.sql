@@ -65,12 +65,21 @@ CREATE TABLE IF NOT EXISTS carousel_item (
 );
 
 -- Table 15: Buildings
-CREATE TABLE IF NOT EXISTS buildings (
+CREATE TABLE IF NOT EXISTS Buildings (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
     latitude DECIMAL(9,6) NOT NULL,
     longitude DECIMAL(9,6) NOT NULL
 );
+
+INSERT IGNORE INTO Buildings (name, latitude, longitude)
+VALUES 
+    ('IT Department', 18.48597, 73.81602),
+    ('Main Building', 18.48639, 73.81589),
+    ('Instru Building', 18.48646, 73.81649),
+    ('Suswaad Canteen', 18.48620, 73.81671),
+    ('Mechanical Building', 18.48552, 73.81645);
+
 
 
 -- Table 17: Alumnae
