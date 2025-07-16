@@ -1,5 +1,5 @@
 ---
-# 🎓 Campus Connect
+## 🎓 Campus Connect
 
 **Campus Connect** is a full-stack, role-based web platform designed to centralize and simplify communication across a college campus. It enables students, faculty, visitors, and administrators to stay informed about campus events, opportunities, and announcements — all from one place.
 
