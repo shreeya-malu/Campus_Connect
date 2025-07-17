@@ -66,10 +66,12 @@ def home():
 
     # Fetch the 5 most recent resources
     cursor.execute("""
-        SELECT r.Resource_id, rt.ResourceType_name AS type, r.Link, c.Name AS contributor
+        SELECT r.Resource_id, rt.ResourceType_name AS type, d.Domain_name AS domain, r.Link, c.Name AS contributor
         FROM resources r
         JOIN resourcetypes rt ON r.ResourceType_id = rt.ResourceType_id
+        JOIN domains d ON r.Domain_id = d.Domain_id
         JOIN contributors c ON r.Contributor_id = c.Contributor_id
+        ORDER BY r.Resource_id DESC
         LIMIT 5
     """)
     resources = cursor.fetchall()
