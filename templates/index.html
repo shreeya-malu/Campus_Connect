@@ -39,7 +39,7 @@
                     <div class="card">
                         <img src="{{ url_for('static', filename=item.image_url) }}" alt="Event image">
                         <div class="card-body">
-                            <p>{{ item.description[:100] }}...</p>
+                            <p>{{ item.description[:100] + '...' if item.description else 'No description available.' }}</p>
                             <a href="{{ item.link }}" target="_blank">
                                 <button class="apply-btn">Apply</button>
                             </a>
