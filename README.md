@@ -8,7 +8,7 @@
 
 ## 🔗 Live Demo
 
-📂 [Demo Video](#)
+📂 [Demo Video](https://www.loom.com/share/309b1b0dabad456b969553ab33eda616?sid=0c3187db-5398-43d6-8697-caf04c835077)
 > 🔔 **Note:** The live deployment is temporarily available at  
 > 🌍 [https://campus-connect.onrender.com](https://campus-connect-zbf3.onrender.com/home)  
 > *(It may be taken down soon)*
